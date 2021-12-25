@@ -13,6 +13,7 @@ def get_as_base64(url):
     Returns:
         string: base64 string of the image
     """
+    print(f'Getting image at {url}')
     return base64.b64encode(requests.get(url).content)
 
 
@@ -20,16 +21,16 @@ def get_as_base64(url):
 class DiagramSerializer(serializers.ModelSerializer):
     class Meta:
         model=Diagram
-        fields='__all__'
+        fields=['url']
         
     
         
 # Question Serializer
 class QuestionSerializer(serializers.ModelSerializer):
-    diagrams=DiagramSerializer()
+    diagrams=DiagramSerializer(many=True)
     class Meta:
         model=Question
-        fields=['text','embedding','exam','year','answer','diagrams']
+        fields=['text','subject','embedding','exam','year','answer','diagrams']
         
     #create a question
     def create(self, validated_data):
@@ -38,6 +39,12 @@ class QuestionSerializer(serializers.ModelSerializer):
         [base64_diagrams.append(get_as_base64(dig['url'])) for dig in diagrams_data]
         question=Question.objects.create(**validated_data)
         #Diagram.objects.bulk_create(base64_diagrams)
-        for dig,dig_url in zip(base64_diagrams,base64_diagrams):
-            Diagram.objects.create(question=question,base64string=dig,url=dig_url)
+        #diagram_objects=[]
+        #diagram_object={}
+        for dig,dig_url in zip(base64_diagrams,diagrams_data):
+            #Diagram.objects.create(question=question,base64string=dig,url=dig_url['url'])
+            #diagram_objects['question']=question
+            #diagram_objects['base64string']=dig
+            #diagram_objects['url']=dig_url['url']
+            Diagram.objects.create(question=question,base64string=dig,url=dig_url['url'])
         return question         

@@ -1,0 +1,53 @@
+from django.shortcuts import render
+import openai
+from .models import Summarizer
+from .serializers import SummarizerSerializer
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+# Create your views here.
+
+# Put the prompt in the proper format
+def format_prompt(prompt):
+  prompt=prompt+'tldr;'
+  return prompt
+
+
+# openai response method
+def get_response(prompt,end_of_text):
+        prompt=format_prompt(prompt)
+        return openai.Completion.create(
+          engine="davinci",
+          prompt=prompt,
+          temperature=0,
+          max_tokens=200,
+          top_p=1,
+          frequency_penalty=0.0,
+          presence_penalty=0.0,
+          stop=[end_of_text]
+        )['choices'][0]
+        
+        
+        
+class SummarizerView(APIView):
+  def get(self,request):
+    summarizer_data=Summarizer.objects.all()
+    serializer=SummarizerSerializer(summarizer_data,many=True)
+    #serializer.is_valid(raise_exception=True)
+    return Response(serializer.data)
+  
+  def post(self,request):
+    text=request.data['text']
+    # Check for subscription validity
+    # Get the summary
+    summary=get_response(text)
+    # Save the summary to database
+    serializer=SummarizerSerializer(data={
+      'text':text,
+      'summary':summary
+    })
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
+        return Response({'summary':summary},status=status.HTTP_201_Ok)
+    return Response({'error':'Bad Request'},status=status.HTTP_400_BAD_REQUEST) 
+        
