@@ -64,7 +64,8 @@ def get_questions_and_embeddings(subject):
         subject (string): the name of the subject you would like to get
     """
     #questions=Question.objects.filter(subject__iexact=subject)
-    questions=Question.objects.all()
+    #questions=Question.objects.all()
+    questions=[]
     questions_list=[]
     embeddings_list=[]
     answers_list=[]
@@ -87,12 +88,12 @@ math_questions,math_embeddings,math_answers,math_diagrams=get_questions_and_embe
 
 # Load the embedding module
 #embed=hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
-#EMBED_DIR=r'C:\\Users\\AYERHAN MSUGHTER\\Desktop\\Enigma\\module_useT'
-#embed=hub.load(EMBED_DIR)
+EMBED_DIR=r'C:\\Users\\AYERHAN MSUGHTER\\Desktop\\Enigma\\module_useT'
+embed=hub.load(EMBED_DIR)
 
 def embed_question(data):
-    #embedding=embed([data])
-    embedding=[]
+    embedding=embed([data])
+    #embedding=[]
     return embedding
 def get_top_n_most_similar_questions_with_answers_similarites(embedding,q_embeddings):
     similarities=cosine_similarity(embedding, q_embeddings)

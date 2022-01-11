@@ -48,6 +48,27 @@ def run_validations(username,email,phone_number,password):
 
 # check if the strength of password is okay	
 # Method for writing data to account Database i.e account creation
+class VerifyDataView(APIView):
+    def post(self,request):
+            serializer=AccountSerializer(data=request.data)
+            #validate data format
+            if serializer.is_valid(raise_exception=True):
+                # run validations
+                data=serializer.validated_data
+                print('Data is valid')
+                #run_validations(data['username'],data['email'],data['phone_number'],data['password'])
+                if validate_duplicate_username(data['username']):
+                    return Response({'message':'username already taken'},status=status.HTTP_401_UNAUTHORIZED)
+                elif validate_duplicate_phone_number(data['phone_number']):
+                    return Response({'message':'phone number already taken'},status=status.HTTP_401_UNAUTHORIZED)
+                elif validate_duplicate_email(data['email']):
+                    return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
+                elif validate_password_strength(data['password']):
+                    return Response({'message':'password strength is weak'},status=status.HTTP_401_UNAUTHORIZED)				
+                return Response({'message':'Details are valid'},status=status.HTTP_200_OK  )
+            print('Data is not valid')    
+            #return Response({'message':'Bad request'},status=status.HTTP_400_BAD_REQUEST)
+        
 class AccountView(APIView):
 	
     def get(self,request):
@@ -62,13 +83,13 @@ class AccountView(APIView):
                 data=serializer.validated_data
                 #run_validations(data['username'],data['email'],data['phone_number'],data['password'])
                 if validate_duplicate_username(data['username']):
-                    return Response({'message':'username already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'username already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_duplicate_phone_number(data['phone_number']):
-                    return Response({'message':'phone number already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'phone number already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_duplicate_email(data['email']):
-                    return Response({'message':'email already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_password_strength(data['password']):
-                    return Response({'message':'password strength is weak'},status=status.HTTP_403_FORBIDDEN)				
+                    return Response({'message':'password strength is weak'},status=status.HTTP_401_UNAUTHORIZED)				
 
                 serializer.save()
                 return Response({'message':'account creted successfuly'},status=status.HTTP_201_CREATED)
@@ -91,11 +112,11 @@ class AccountView(APIView):
                 username=request.data['username']
                 phone_number=request.data['phone_number']
                 if validate_duplicate_username(data['username']):
-                    return Response({'message':'username already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'username already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_duplicate_phone_number(data['phone_number']):
-                    return Response({'message':'phone number already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'phone number already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_duplicate_email(email):
-                        return Response({'message':'email already taken'},status=status.HTTP_226_IM_USED)
+                        return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 else:
                         serializer=AccountSerializer(user,data={'username':username,'phone_number':phone_number,'email':email},partial=True)
                         if serializer.is_valid(raise_exception=True):
@@ -103,7 +124,7 @@ class AccountView(APIView):
             elif 'email' in request.data:
                 email=request.data['email']
                 if validate_duplicate_email(email):
-                    return Response({'message':'email already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 else:
                     serializer=AccountSerializer(user,data={'email':email},partial=True)
                     if serializer.is_valid(raise_exception=True):
@@ -111,7 +132,7 @@ class AccountView(APIView):
             elif 'username' in request.data:
                 username=request.data['username']
                 if validate_duplicate_username(username):
-                    return Response({'message':'username is already taken'},status=status.HTTP_226_IM_USED)
+                    return Response({'message':'username is already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 else:
                     serializer=AccountSerializer(user,data={'username':username},partial=True)
                     if serializer.is_valid(raise_exception=True):
