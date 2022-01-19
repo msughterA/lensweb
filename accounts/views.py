@@ -78,8 +78,10 @@ class AccountView(APIView):
     def post(self,request):
             serializer=AccountSerializer(data=request.data)
             #validate data format
-            if serializer.is_valid(raise_exception=True):
+            print('request recorded')
+            if serializer.is_valid():
                 # run validations
+                print('Account creation data is valid')
                 data=serializer.validated_data
                 #run_validations(data['username'],data['email'],data['phone_number'],data['password'])
                 if validate_duplicate_username(data['username']):
@@ -90,10 +92,20 @@ class AccountView(APIView):
                     return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_password_strength(data['password']):
                     return Response({'message':'password strength is weak'},status=status.HTTP_401_UNAUTHORIZED)				
-
+                
                 serializer.save()
+                user=Account.objects.filter(phone_number__iexact=data['phone_number']).get()
+                login_data={'phone_number':data['phone_number'],'device_id':data['device_id'],'account_id':user.id,
+				'password':data['password'],'isActive':True}		
+                if validate_phone_number_and_password(data['phone_number'],data['password']):
+                    loginSerializer=LoginSerializer(data=login_data)
+                    if loginSerializer.is_valid(raise_exception=True):
+                        loginSerializer.save()
+                        return Response({'message':'Login successful'})
+                    return Response({'message':'you must provide details in valid format'})
                 return Response({'message':'account creted successfuly'},status=status.HTTP_201_CREATED)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            print(serializer.errors)    
+            return Response({'message':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
 
     def put(self,request):
         # to update you need an existing object
@@ -190,7 +202,7 @@ class LoginView(APIView):
 		serializer=LoginSerializer(login_model,many=True)
 		return Response(serializer.data)
 
-	def post(self,request):
+	def put(self,request):
 		if request.data['phone_number'] and request.data['password'] and request.data['device_id']:
 			phone_number=request.data['phone_number']
 			password=request.data['password']
@@ -201,7 +213,7 @@ class LoginView(APIView):
 			user=Account.objects.filter(phone_number__iexact=phone_number).get()
 			account_id=user.id
 		except Account.DoesNotExist:
-			return Response({'message':'invalid phone number or password'})		
+			return Response({'message':'invalid phone number or password'},status=status.HTTP_401_UNAUTHORIZED)		
 		data={'phone_number':phone_number,'device_id':device_id,'account_id':account_id,
 				'password':password,'isActive':True}		
 		if validate_phone_number_and_password(phone_number,password):
@@ -210,7 +222,7 @@ class LoginView(APIView):
 				serializer.save()
 				return Response({'message':'Login successful'})
 			return Response({'message':'you must provide details in valid format'})
-		return Response({'message':'invalid phone number or password'})
+		return Response({'message':'invalid phone number or password'},status=status.HTTP_400_BAD_REQUEST)
 	# the delete should be called when user wants to log out
 	# this method simply deletes the user from the login database	
 	def delete(self,request):

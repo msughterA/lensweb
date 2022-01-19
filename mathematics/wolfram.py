@@ -1,6 +1,6 @@
 import requests
 import wolframalpha
-
+import urllib
 
 APPID='PG3TTH-P3Q6Q5JRWX'
 # Method for solving equations

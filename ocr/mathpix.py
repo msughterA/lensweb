@@ -4,7 +4,7 @@ import base64
 import requests
 import json
 import os
-from serializers import OcrSerializer
+from .serializers import OcrSerializer
 
 
 APP_KEY="os.environ['MATH_PIX_APP_KEY']"
