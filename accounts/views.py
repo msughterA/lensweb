@@ -1,3 +1,4 @@
+import email
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -111,29 +112,17 @@ class AccountView(APIView):
         # to update you need an existing object
         # use phone phone number to get
         data=request.data
+        print(data)
         if 'phone_number' in data:
             phone_number=data['phone_number']
         else:
+            print('you must provide a phone number')
             return Response({'message':'you must provide a phone_number'},status=status.HTTP_400_BAD_REQUEST)	
         
         try:
             user=Account.objects.filter(phone_number__iexact=phone_number).get()
             #serializer=accountDBSerializer(user,data=request.da)
-            if ('email' in request.data) and ('new_phone_number' in request.data) and ('username' in request.data):
-                email=request.data['email']
-                username=request.data['username']
-                phone_number=request.data['phone_number']
-                if validate_duplicate_username(data['username']):
-                    return Response({'message':'username already taken'},status=status.HTTP_401_UNAUTHORIZED)
-                elif validate_duplicate_phone_number(data['phone_number']):
-                    return Response({'message':'phone number already taken'},status=status.HTTP_401_UNAUTHORIZED)
-                elif validate_duplicate_email(email):
-                        return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
-                else:
-                        serializer=AccountSerializer(user,data={'username':username,'phone_number':phone_number,'email':email},partial=True)
-                        if serializer.is_valid(raise_exception=True):
-                            serializer.save()
-            elif 'email' in request.data:
+            if 'email' in request.data:
                 email=request.data['email']
                 if validate_duplicate_email(email):
                     return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
@@ -147,7 +136,7 @@ class AccountView(APIView):
                     return Response({'message':'username is already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 else:
                     serializer=AccountSerializer(user,data={'username':username},partial=True)
-                    if serializer.is_valid(raise_exception=True):
+                    if serializer.is_valid(): 
                         serializer.save()
             elif 'password' in request.data:
                 password=request.data['password']
@@ -157,7 +146,7 @@ class AccountView(APIView):
                     serializer=AccountSerializer(user,data={'password':password},partial=True)
                     if serializer.is_valid(raise_exception=True):
                         serializer.save()
-            elif 'new_phone_number':
+            elif 'new_phone_number' in request.data:
                 new_phone_number=request.data['new_phone_number']
                 if validate_duplicate_phone_number(new_phone_number):
                     return Response({'message':'phone number already taken'},status=status.HTTP_400_BAD_REQUEST)
@@ -166,6 +155,7 @@ class AccountView(APIView):
                     if serializer.is_valid(raise_exception=True):
                         serializer.save()					
             else:
+                print('Nothing to update error')
                 return Response({"message":"Nothing to update"},status=status.HTTP_400_BAD_REQUEST)
         except Account.DoesNotExist:
             return Response({'message':'phone number does not exist'},status=status.HTTP_400_BAD_REQUEST)	
@@ -202,7 +192,7 @@ class LoginView(APIView):
 		serializer=LoginSerializer(login_model,many=True)
 		return Response(serializer.data)
 
-	def put(self,request):
+	def post(self,request):
 		if request.data['phone_number'] and request.data['password'] and request.data['device_id']:
 			phone_number=request.data['phone_number']
 			password=request.data['password']
@@ -220,7 +210,8 @@ class LoginView(APIView):
 			serializer=LoginSerializer(data=data)
 			if serializer.is_valid(raise_exception=True):
 				serializer.save()
-				return Response({'message':'Login successful'})
+                # Return the detail to be stored on the physical device
+				return Response({'username':user.username,'phoneNumber':phone_number,'email':user.email,})
 			return Response({'message':'you must provide details in valid format'})
 		return Response({'message':'invalid phone number or password'},status=status.HTTP_400_BAD_REQUEST)
 	# the delete should be called when user wants to log out
@@ -238,14 +229,4 @@ class LoginView(APIView):
 			return Response({'message':'log out successful'})
 		except Login.DoesNotExist:
 			return Response({'message':'unable to logout please provide valid details'},status=status.HTTP_404_NOT_FOUND)		
-
-
-
-
-
-
-   
-   
-	    	
-		        
 

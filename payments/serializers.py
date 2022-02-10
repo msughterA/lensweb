@@ -7,9 +7,9 @@ class PaymentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model=Payment
 		fields='__all__'
-	transaction_device_id=serializers.CharField(max_length=20)
+	transaction_device_id=serializers.CharField(max_length=200)
 	transaction_id=serializers.CharField(max_length=200)
-	amount_paid=serializers.DecimalField(max_digits=5,decimal_places=3)
+	amount_paid=serializers.DecimalField(max_digits=20,decimal_places=10)
 	#account_id=serializers.RelatedField(many=True,read_only=True)
 	expiry_date=serializers.DateTimeField()	
 

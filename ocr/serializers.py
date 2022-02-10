@@ -6,5 +6,5 @@ from rest_framework import serializers
 class OcrSerializer(serializers.ModelSerializer):
 	class Meta:
 		model=Ocr
-		field='__all__'
+		fields='__all__'
 

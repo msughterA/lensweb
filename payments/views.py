@@ -12,7 +12,9 @@ from paystackapi.transaction import Transaction
 from .models import Payment,Pin
 from .serializers import PaymentSerializer,PinSerializer
 from accounts.models import Account
+import os
 #test paystack api key
+#skTest=os.environ['PAYSTACK_API_KEY']
 skTest=''
 # Authentication tokens
 headers = {
@@ -102,7 +104,6 @@ def generate_subscription_pin():
 	return subscription_pin
 
 # Create your views here.
-
 # Payment view to handle payments with paystack api
 class CardSubscriptionView(APIView):
 	def get(self,request):
@@ -110,6 +111,7 @@ class CardSubscriptionView(APIView):
 		serializer=PaymentSerializer(payment_model,many=True)
 		return Response(serializer.data)
 	def post(self,request):
+            print(request.data)
             phone_number=request.data['phone_number']
             try:
                 user=Account.objects.filter(phone_number__iexact=request.data['phone_number']).get()
@@ -127,9 +129,10 @@ class CardSubscriptionView(APIView):
                     'account_id':user.id,'amount_paid':request.data['amount_paid'],
                     'expiry_date':expiry_date}
             serializer=PaymentSerializer(data=data)
-            if serializer.is_valid(raise_exception=True):
+            if serializer.is_valid():
                 serializer.save()
                 return Response({'message':'Payment successful'},status=status.HTTP_201_CREATED)
+            print(serializer.errors)
             return Response({'message':'Data Validation error'},status=status.HTTP_400_BAD_REQUEST)		
 
 # Pin view to handle pin subscription

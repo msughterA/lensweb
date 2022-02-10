@@ -17,7 +17,7 @@ class AccountSerializer(serializers.ModelSerializer):
       phone_number=serializers.CharField(max_length=20)
       email=serializers.EmailField()
       password=serializers.CharField(max_length=8)
-      device_id=serializers.CharField(max_length=20)
+      device_id=serializers.CharField(max_length=100)
       #date=serializers.DateTimeField()      
 
       def create(self,validated_data):
@@ -41,7 +41,7 @@ class LoginSerializer(serializers.ModelSerializer):
     phone_number=serializers.CharField(max_length=20)
     password=serializers.CharField(max_length=8)
     isActive=serializers.BooleanField()
-    device_id=serializers.CharField(max_length=20)
+    device_id=serializers.CharField(max_length=100)
 
     def create(self,validated_data):
         return Login.objects.create(**validated_data)

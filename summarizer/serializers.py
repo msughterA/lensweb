@@ -4,4 +4,4 @@ from .models import Summarizer
 class SummarizerSerializer(serializers.ModelSerializer):
     class Meta:
         model=Summarizer
-        field='__all__'
+        fields='__all__'

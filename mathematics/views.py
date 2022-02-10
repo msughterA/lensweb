@@ -3,6 +3,9 @@ from rest_framework.views import APIView
 from mathematics.wolfram import auto_solve, prove_equations, simplify_expression, solve_equations
 from ocr import mathpix
 from .wolfram import simplify_expression,solve_equations,auto_solve
+from rest_framework import status
+from rest_framework.response import Response
+
 # Create your views here.
 class MathView(APIView):
     def post(self,request):
@@ -10,16 +13,56 @@ class MathView(APIView):
         # validate subscription
         # pass query to wolfram
         query=mathpix.run_ocr(request.data['image'])
-        if request.data['type']=='solve':     
+        if request.data['mode']=='Solve':     
             result,steps=solve_equations(query)
-            #return response
+            response_data={
+            'question':[
+                {'type':'latex','format':'tex','data':query}
+            ],
+            'answer':[
+            {'type':'text','format':'txt','data':result},
+            {'type':'latex','format':'tex','data':steps}
+            ]
+            }
+            return Response(response_data,status=status.HTTP_200_OK)
             
-        elif request.data['type']=='simplify':
-            result,steps=simplify_expression(query)  
+        elif request.data['mode']=='Simplify':
+            result,steps=simplify_expression(query)
+            response_data={
+            'question':[
+                {'type':'latex','format':'tex','data':query}
+            ],
+            'answer':[
+            {'type':'text','format':'txt','data':result},
+            {'type':'latex','format':'tex','data':steps}
+            ]
+            } 
+            return Response(response_data,status=status.HTTP_200_OK) 
             #return response
-        elif request.data['type']=='prove':
+        elif request.data['mode']=='Prove':
             result,steps=prove_equations(query)
-        elif request.data['type']=='auto':
+            response_data={
+            'quesion':[
+                {'type':'latex','format':'tex','data':query}
+            ],
+            'answer':[
+            {'type':'text','format':'txt','data':result},
+            {'type':'latex','format':'tex','data':steps}
+            ]
+            }
+            return Response(response_data,status=status.HTTP_200_OK)
+        elif request.data['mode']=='Auto':
             answer=auto_solve(query)
-            #return response
+            response_data={
+            'quesion':[
+                {'type':'latex','format':'tex','data':query}
+            ],
+            'answer':[
+            {'type':'text','format':'txt','data':answer},
+            ]
+            }
+            return Response(response_data,status=status.HTTP_200_OK)
+        else:
+            print('server error')
+            return Response({'message':'Server error'},status=status.HTTP_401_UNAUTHORIZED)    
          

@@ -5,6 +5,8 @@ from .serializers import SummarizerSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from ocr import mathpix
+import os
 # Create your views here.
 
 # Put the prompt in the proper format
@@ -12,7 +14,8 @@ def format_prompt(prompt):
   prompt=prompt+'tldr;'
   return prompt
 
-
+#openai.api_key=os.environ['OPEN_AI_KEY']
+openai.api_key=''
 # openai response method
 def get_response(prompt,end_of_text):
         prompt=format_prompt(prompt)
@@ -37,17 +40,23 @@ class SummarizerView(APIView):
     return Response(serializer.data)
   
   def post(self,request):
-    text=request.data['text']
+    query=mathpix.run_ocr(request.data['image'])
+    text=query
     # Check for subscription validity
     # Get the summary
-    summary=get_response(text)
+    summary=get_response(text,'.')
     # Save the summary to database
     serializer=SummarizerSerializer(data={
       'text':text,
-      'summary':summary
+      'summary':summary['text']
     })
-    if serializer.is_valid(raise_exception=True):
-        serializer.save()
-        return Response({'summary':summary},status=status.HTTP_201_Ok)
-    return Response({'error':'Bad Request'},status=status.HTTP_400_BAD_REQUEST) 
+    #if serializer.is_valid(raise_exception=True):
+        #serializer.save()
+    response_data={
+      'summary':[
+       {'type':'latex','format':'tex','data':summary['text']}
+      ]
+      }
+    return Response(response_data,status=status.HTTP_200_OK)
+    #return Response({'error':'Bad Request'},status=status.HTTP_400_BAD_REQUEST) 
         
