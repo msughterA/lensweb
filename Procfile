@@ -1,1 +1,1 @@
-web gunicorn lensweb.wsgi:application --log-file -
+web: gunicorn lensweb.wsgi --log-file -
