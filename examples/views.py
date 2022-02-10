@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-import tensorflow_hub as hub
+#import tensorflow_hub as hub
 import json
 from enum import Enum
 from ocr import mathpix
