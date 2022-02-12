@@ -84,10 +84,23 @@ WSGI_APPLICATION = 'lensweb.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': 'deft9jf90982cc',
+
+        'USER': 'tnqaanocrrkzds',
+
+        'PASSWORD': 'a54fa42b61c299d17f07f1a673cb2dfb00c76de186743f234f8a44e45837c5b1',
+
+        'HOST': 'ec2-3-226-59-11.compute-1.amazonaws.com',
+
+        'PORT': '5432',
+
     }
+
 }
 
 
