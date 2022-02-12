@@ -14,8 +14,8 @@ def format_prompt(prompt):
   prompt=prompt+'tldr;'
   return prompt
 
-#openai.api_key=os.environ['OPEN_AI_KEY']
-openai.api_key=''
+openai.api_key=os.environ['OPEN_AI_KEY']
+#openai.api_key=''
 # openai response method
 def get_response(prompt,end_of_text):
         prompt=format_prompt(prompt)

@@ -4,8 +4,8 @@ import urllib
 import os
 #from mathematics.wolfram import APPID
 
-#APPID=os.environ['WOLFRAM_APP_ID']
-APPID=''
+APPID=os.environ['WOLFRAM_APP_ID']
+#APPID=''
 # get the url in the right format
 def url_string(query,format):
     query_url = f"http://api.wolframalpha.com/v2/query?" \

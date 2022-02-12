@@ -3,8 +3,8 @@ import wolframalpha
 import urllib
 import os
 
-#APPID=os.environ['WOLFRAM_APP_ID']
-APPID=''
+APPID=os.environ['WOLFRAM_APP_ID']
+#APPID=''
 
 
 # get the url in the right format
