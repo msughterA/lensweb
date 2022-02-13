@@ -17,19 +17,19 @@ def url_string(query,format):
         f"&output=json"
     return query_url
 
-#make a function to parse the json
-def parse_json(json_data,key,format):
+# make a function to parse the json
+def parse_json(json_data,key):
     #get the query result
     query_result=json_data['queryresult']
     #get the pods
     pods=query_result['pods']
     # list to held the data element we are interested in
-    data=''
+    data=[]
     for pod in pods:
         for subpod in pod['subpods']:
             if key in subpod:
                 #data.append(subpod[key])
-                data=data+'\n'+str(subpod[key])
+                data.append({'type':'latex','format':'tex','data':subpod[key]})
     return data
 
 
@@ -97,7 +97,7 @@ def prove_equations(equation):
         return steps,result
 
 # Method for automatically answering math questions
-def auto_solve(question):
+def auto_solve(question,format):
     query = urllib.parse.quote_plus(f"{question}")
     query_url=url_string(query,format)
     r = requests.get(query_url).json()

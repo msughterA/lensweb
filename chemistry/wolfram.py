@@ -28,7 +28,7 @@ def parse_json(json_data,key):
         for subpod in pod['subpods']:
             if key in subpod:
                 #data.append(subpod[key])
-                data=data+'\n'+str(subpod[key])
+                data.append({'type':'latex','format':'tex','data':subpod[key]})
     return data
 
 # Method for balancing chemical equations

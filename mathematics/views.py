@@ -52,14 +52,12 @@ class MathView(APIView):
             }
             return Response(response_data,status=status.HTTP_200_OK)
         elif request.data['mode']=='Auto':
-            answer=auto_solve(query)
+            answer=auto_solve(query,'mathml')
             response_data={
             'quesion':[
                 {'type':'latex','format':'tex','data':query}
             ],
-            'answer':[
-            {'type':'text','format':'txt','data':answer},
-            ]
+            'answer':answer
             }
             return Response(response_data,status=status.HTTP_200_OK)
         else:

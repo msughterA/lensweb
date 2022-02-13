@@ -28,9 +28,7 @@ class ChemistryView(APIView):
             'quesion':[
                 {'type':'latex','format':'tex','data':query}
             ],
-            'answer':[
-            {'type':'text','format':'txt','data':answer}
-            ]
+            'answer':answer
             }
             return Response(response_data,status=status.HTTP_200_OK)
         else:

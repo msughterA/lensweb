@@ -24,13 +24,13 @@ def ocr_response_format(result):
     :return the latex format of the text from the picture:
     '''
     text = json.loads(result.text)
-    return text['text']
+    return text['mathml']
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
     try:
         r = requests.post("https://api.mathpix.com/v3/text",
             data=json.dumps({'src': image_uri,
-                             "formats": ["text", "data", "html"],
+                             "formats": ["text", "data", "html","mathml"],
                              "data_options": {
                                  "include_asciimath": True,
                                  "include_latex": True  
