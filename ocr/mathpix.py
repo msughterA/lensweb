@@ -6,10 +6,10 @@ import os
 from .serializers import OcrSerializer
 
 
-#APP_KEY=os.environ['OCR_APP_KEY']
-#APP_ID=os.environ['OCR_APP_ID']
-APP_KEY=''
-APP_ID=''
+APP_KEY=os.environ['OCR_APP_KEY']
+APP_ID=os.environ['OCR_APP_ID']
+#APP_KEY=''
+#APP_ID=''
 
 
 
@@ -24,7 +24,7 @@ def ocr_response_format(result):
     :return the latex format of the text from the picture:
     '''
     print(result)
-    text = json.loads(result)
+    #text = json.loads(result)
     return result['mathml']
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
