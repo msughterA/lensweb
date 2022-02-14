@@ -23,12 +23,13 @@ def parse_json(json_data,key):
     #get the pods
     pods=query_result['pods']
     # list to held the data element we are interested in
-    data=''
+    data=[]
     for pod in pods:
         for subpod in pod['subpods']:
             if key in subpod:
                 #data.append(subpod[key])
                 data.append({'type':'latex','format':'tex','data':subpod[key]})
+    print(data)            
     return data
 
 # Method for balancing chemical equations
