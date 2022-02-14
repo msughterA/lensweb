@@ -100,6 +100,7 @@ def prove_equations(equation):
 def auto_solve(question,format):
     #query = urllib.parse.quote_plus(f"{question}")
     query=question
+    print(query)
     query_url=url_string(query,format)
     r = requests.get(query_url).json()
     return parse_json(r,format)
