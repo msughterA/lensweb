@@ -55,7 +55,7 @@ class MathView(APIView):
             answer=auto_solve(query,'mathml')
             print(f'THIS IS THE ANSWER {answer}')
             response_data={
-            'quesion':[
+            'question':[
                 {'type':'latex','format':'tex','data':query}
             ],
             'answer':answer
