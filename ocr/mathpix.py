@@ -39,7 +39,7 @@ def run_ocr(base64_img):
                              }),
             headers={"app_id": APP_ID, "app_key": APP_KEY,
                      "Content-type": "application/json"})
-        text=ocr_response_format(r)
+        text=ocr_response_format(r.json())
         save_to_data_collection(base64_img,text)
         return text
     except Exception as e:
