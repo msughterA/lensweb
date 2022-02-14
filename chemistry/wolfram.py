@@ -21,17 +21,24 @@ def parse_json(json_data,key):
     #get the query result
     query_result=json_data['queryresult']
     #get the pods
-    pods=query_result['pods']
-    # list to held the data element we are interested in
-    data=[]
-    for pod in pods:
-        for subpod in pod['subpods']:
-            if key in subpod:
-                #data.append(subpod[key])
-                data.append({'type':'latex','format':'tex','data':subpod[key]})
-    print(data)            
-    return data
-
+    if 'pods' in query_result:
+        pods=query_result['pods']
+        # list to held the data element we are interested in
+        data=[]
+        for pod in pods:
+            for subpod in pod['subpods']:
+                if key in subpod:
+                    #data.append(subpod[key])
+                    data.append({'type':'text','format':'txt','data':subpod[key]})
+        return data
+    else:
+        data=[]
+        data.append({'type':'text','format':'txt','data':'Oooops we could not find an answer to your question'})
+        data.append({'type':'text','format':'txt','data':'Try any of the following'})
+        data.append({'type':'text','format':'txt','data':'(a) snapping the question properly'})
+        data.append({'type':'text','format':'txt','data':'(b) Re-writing the question in a shorter form'})
+        data.append({'type':'text','format':'txt','data':'(c) removing unnecessary details from the question'})
+        return data
 # Method for balancing chemical equations
 def balance_equation(equation):
     pass
