@@ -23,6 +23,7 @@ def ocr_response_format(result):
     :param json:
     :return the latex format of the text from the picture:
     '''
+    print(result)
     text = json.loads(result.text)
     return text['mathml']
 def run_ocr(base64_img):
