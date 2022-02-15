@@ -27,7 +27,7 @@ def ocr_response_format(result):
     #print(result.json())
     #text = json.loads(result)
     latex_input=result.json()['text']
-    return latex2mathml.converter.convert(latex_input)
+    return result.json()['text']
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
     try:
