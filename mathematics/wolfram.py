@@ -112,7 +112,4 @@ def auto_solve(question,format):
     print(query)
     query_url=url_string(query,format)
     r = requests.get(query_url).json()
-    print(r.status_code)
-    print(r.content)
-    print(json.loads(r))
     return parse_json(r,format)
