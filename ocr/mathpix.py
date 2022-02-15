@@ -32,7 +32,7 @@ def run_ocr(base64_img):
         r = requests.post("https://api.mathpix.com/v3/text",
             data=json.dumps({'src': image_uri,
                              "formats": ["text", "data", "html","mathml"],
-                             "math_inline_delimiters":["", ""],
+                             #"math_inline_delimiters":["", ""],
                              "data_options": {
                                  "include_asciimath": True,
                                  "include_latex": True  
