@@ -36,6 +36,7 @@ jmespath==0.10.0
 joblib==1.1.0
 keras==2.7.0
 Keras-Preprocessing==1.1.2
+latex2mathml==3.64.0
 libclang==12.0.0
 Markdown==3.3.6
 more-itertools==8.12.0
