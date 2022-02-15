@@ -27,17 +27,19 @@ def ocr_response_format(result):
     #print(result.json())
     #text = json.loads(result)
     latex_input=result.json()['text']
+    print(result.json())
     return result.json()['text']
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
     try:
         r = requests.post("https://api.mathpix.com/v3/text",
             data=json.dumps({'src': image_uri,
-                             "formats": ["text", "data", "html","mathml"],
+                             "formats": ["text", "data", "html"],
                              #"math_inline_delimiters":["", ""],
                              "data_options": {
                                  "include_asciimath": True,
-                                 "include_latex": True  
+                                 "include_latex": True,
+                                 "include_mathml":True
                              }
                              }),
             headers={"app_id": APP_ID, "app_key": APP_KEY,
