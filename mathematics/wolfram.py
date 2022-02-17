@@ -1,3 +1,4 @@
+
 import requests
 import wolframalpha
 import urllib
@@ -5,8 +6,6 @@ import os
 import json
 
 APPID=os.environ['WOLFRAM_APP_ID']
-#APPID=''
-
 
 # get the url in the right format
 def url_string(query,format):
