@@ -7,6 +7,7 @@ from .serializers import OcrSerializer
 import latex2mathml.converter
 from wolframclient.evaluation import SecuredAuthenticationKey,WolframCloudSession
 from wolframclient.language import wl,wlexpr
+import re
 
 APP_KEY=os.environ['OCR_APP_KEY']
 APP_ID=os.environ['OCR_APP_ID']
@@ -41,7 +42,8 @@ def ocr_response_format(result):
     #print(result.json())
     #text = json.loads(result)
     latex_input=result.json()['text']
-    print(result.json()['data'][0])
+    print(result.json()['text'])
+    print(result.json()['data'])
     mathml_to_expression(result.json()['data'][0])
     return result.json()['text']
 def run_ocr(base64_img):
@@ -52,7 +54,7 @@ def run_ocr(base64_img):
                              "formats": ["text", "data", "html"],
                              # make mathpix to include only mathml in the data options
                              "data_options": {
-                                 "include_mathml":True
+                                "include_asciimath": True,
                              }
                              }),
             headers={"app_id": APP_ID, "app_key": APP_KEY,
@@ -64,4 +66,21 @@ def run_ocr(base64_img):
         print(e)
         return 'error',False
         #abort(404, message="we are experiencing a technical issues with OCR please be patient")
-
+pattern="<latex>(.*?)</latex>"        
+def text_parsing(tex,elements):
+    ascii_text=''
+    groups=[]
+    for m in re.finditer(pattern,text):
+        print('Match found')
+        if m.group()!='':
+            print(m.group())
+            #get the inner string by replacing the all the <latex> and </latex> tags with ''
+            inner_text=re.sub('<latex>','',m.group())
+            inner_text=re.sub('</latex>','',inner_text)
+            print(inner_text)
+            # loop through the elements list and substitute
+            for element in elements:
+                ascii_text=re.sub(m.group(),element['value'],text)
+            # substitute the pattern in the text with your new string
+            text=re.sub(m.group(),f'\( {inner_text} \)',text)
+    return text,ascii_text
