@@ -73,7 +73,7 @@ def text_parsing(text,elements):
 
         def __call__(self, match):
             self.called += 1
-            return elements[self.called-1]
+            return elements[self.called-1]['value']
 
     ascii_text=re.sub(pattern,repl(),text)
     return ascii_text
