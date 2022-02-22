@@ -68,7 +68,7 @@ def run_ocr(base64_img):
         print(e)
         return 'error',False
         #abort(404, message="we are experiencing a technical issues with OCR please be patient")
-pattern="<latex>(.*?)</latex>"        
+pattern=r"\\(\()(.*?)(\))"       
 def text_parsing(text,elements):
     ascii_text=''
     groups=[]
