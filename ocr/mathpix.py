@@ -42,10 +42,8 @@ def ocr_response_format(result):
     #print(result.json())
     #text = json.loads(result)
     latex_input=result.json()['text']
-    text,ascii_text=text_parsing(result.json()['text'],result.json()['data'])
+    ascii_text=text_parsing(result.json()['text'],result.json()['data'])
     print(result.json())
-    print('THIS IS THE TEXT')
-    print(text)
     print('THIS IS THE ASCII MATH')
     print(ascii_text)
     #mathml_to_expression(result.json()['data'][0])
@@ -57,7 +55,6 @@ def run_ocr(base64_img):
             data=json.dumps({'src': image_uri,
                              "formats": ["text", "data", "html"],
                              # make mathpix to include only mathml in the data options
-                             "math_inline_delimiters":["<latex>", "</latex>"],
                              "data_options": {
                                 "include_asciimath": True,
                              }
@@ -78,14 +75,6 @@ def text_parsing(text,elements):
     for m in re.finditer(pattern,text):
         print('Match found')
         if m.group()!='':
-            print(m.group())
-            #get the inner string by replacing the all the <latex> and </latex> tags with ''
-            inner_text=re.sub('<latex>','',m.group())
-            inner_text=re.sub('</latex>','',inner_text)
-            print(inner_text)
-            # loop through the elements list and substitute
             for element in elements:
                 ascii_text=ascii_text+re.sub(m.group(),element['value'],text)
-            # substitute the pattern in the text with your new string
-            text=re.sub(m.group(),f'\( {inner_text} \)',text)
-    return text,ascii_text
+    return ascii_text
