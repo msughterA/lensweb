@@ -42,9 +42,12 @@ def ocr_response_format(result):
     #print(result.json())
     #text = json.loads(result)
     latex_input=result.json()['text']
-    print(result.json()['text'])
-    print(result.json()['data'])
-    mathml_to_expression(result.json()['data'][0])
+    text,ascii_text=text_parsing(result.json()['text'],result.json()['data'])
+    print('THIS IS THE TEXT')
+    print(text)
+    print('THIS IS THE ASCII MATH')
+    print(ascii_text)
+    #mathml_to_expression(result.json()['data'][0])
     return result.json()['text']
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
@@ -67,7 +70,7 @@ def run_ocr(base64_img):
         return 'error',False
         #abort(404, message="we are experiencing a technical issues with OCR please be patient")
 pattern="<latex>(.*?)</latex>"        
-def text_parsing(tex,elements):
+def text_parsing(text,elements):
     ascii_text=''
     groups=[]
     for m in re.finditer(pattern,text):
