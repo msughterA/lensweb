@@ -67,11 +67,13 @@ def run_ocr(base64_img):
         #abort(404, message="we are experiencing a technical issues with OCR please be patient")
 pattern=r"\\(\()(.*?)(\))"       
 def text_parsing(text,elements):
-    ascii_text=''
-    groups=[]
-    for m in re.finditer(pattern,text):
-        print('Match found')
-        if m.group()!='':
-            for element in elements:
-                ascii_text=ascii_text+re.sub(m.group(),element['value'],text)
+    class repl:
+        def __init__(self):
+            self.called = 0
+
+        def __call__(self, match):
+            self.called += 1
+            return elements[self.called-1]
+
+    ascii_text=re.sub(pattern,repl(),text)
     return ascii_text
