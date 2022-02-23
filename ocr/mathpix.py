@@ -40,11 +40,11 @@ def ocr_response_format(result):
     :return the latex format of the text from the picture:
     '''
     latex_input=result.json()['text']
-    ascii_text=text_parsing(result.json()['text'],result.json()['data'])
+    #ascii_text=text_parsing(result.json()['text'],result.json()['data'])
     #print(result.json())
     #print('THIS IS THE ASCII MATH')
     #print(ascii_text)
-    return ascii_text
+    return result.json()['text']
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
     try:

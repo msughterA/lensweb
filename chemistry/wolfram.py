@@ -2,6 +2,7 @@ import requests
 import wolframalpha
 import urllib
 import os
+
 #from mathematics.wolfram import APPID
 
 APPID=os.environ['WOLFRAM_APP_ID']
