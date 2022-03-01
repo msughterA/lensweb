@@ -66,7 +66,8 @@ def run_ocr(base64_img):
         print(e)
         return 'error',False
         #abort(404, message="we are experiencing a technical issues with OCR please be patient")
-pattern=r"\\(\()(.*?)(\))"       
+pattern=r"\\(\()(.*?)(\))"  
+pattern2=r"\\(\()(.*?)(\\\))"     
 def text_parsing(text,elements):
     class repl:
         def __init__(self):
@@ -76,5 +77,5 @@ def text_parsing(text,elements):
             self.called += 1
             return elements[self.called-1]['value']
 
-    ascii_text=re.sub(pattern,repl(),text)
+    ascii_text=re.sub(pattern2,repl(),text)
     return ascii_text
