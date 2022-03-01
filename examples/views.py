@@ -147,7 +147,7 @@ class UserView(APIView):
         Args:
             request (json): The query question {'question':'','subjectindex':[0-5]}
         """
-        query=mathpix.run_ocr(request.data['image'])
+        query,ascii_text=mathpix.run_ocr(request.data['image'])
         similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
         # Iterate through the lists
         examples=[]

@@ -45,7 +45,7 @@ def ocr_response_format(result):
     print(result.json()['data'])
     #print('THIS IS THE ASCII MATH')
     #p_text=re.sub(r'\n','',)
-    return result.json()['text']
+    return result.json()['text'],ascii_text
 def run_ocr(base64_img):
     image_uri = "data:image/jpg;base64," + base64_img
     try:

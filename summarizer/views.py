@@ -40,7 +40,7 @@ class SummarizerView(APIView):
     return Response(serializer.data)
   
   def post(self,request):
-    query=mathpix.run_ocr(request.data['image'])
+    query,acii_text=mathpix.run_ocr(request.data['image'])
     text=query
     # Check for subscription validity
     # Get the summary

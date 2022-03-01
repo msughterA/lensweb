@@ -12,7 +12,7 @@ class MathView(APIView):
         # get data
         # validate subscription
         # pass query to wolfram
-        query=mathpix.run_ocr(request.data['image'])
+        query,ascii_text=mathpix.run_ocr(request.data['image'])
         if request.data['mode']=='Solve':     
             result,steps=solve_equations(query)
             response_data={
@@ -27,7 +27,7 @@ class MathView(APIView):
             return Response(response_data,status=status.HTTP_200_OK)
             
         elif request.data['mode']=='Simplify':
-            result,steps=simplify_expression(query)
+            result,steps=simplify_expression(ascii_text)
             response_data={
             'question':[
                 {'type':'latex','format':'tex','data':query}
