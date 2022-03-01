@@ -40,7 +40,8 @@ def ocr_response_format(result):
     :return the latex format of the text from the picture:
     '''
     latex_input=result.json()['text']
-    #ascii_text=text_parsing(result.json()['text'],result.json()['data'])
+    ascii_text=text_parsing(result.json()['text'],result.json()['data'])
+    print(ascii_text)
     print(result.json()['data'])
     #print('THIS IS THE ASCII MATH')
     #p_text=re.sub(r'\n','',)
