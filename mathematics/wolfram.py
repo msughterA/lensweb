@@ -30,7 +30,8 @@ def parse_json(json_data,key):
             for subpod in pod['subpods']:
                 if key in subpod:
                     #data.append(subpod[key])
-                    data.append({'type':'text','format':'txt','data':subpod[key]})
+                    d=r'<p>'+subpod[key]+r'</p>'
+                    data.append({'type':'latex','format':'tex','data':d})
         return data
     else:
         data=[]

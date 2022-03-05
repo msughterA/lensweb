@@ -142,38 +142,7 @@ link_pattern='(?:http\:|https\:)?\/\/.*\.(?:png|jpg)'
         
 class UserView(APIView):
     def post(self,request):
-        """handle client requests for examples to questions
-
-        Args:
-            request (json): The query question {'question':'','subjectindex':[0-5]}
-        """
-        query,ascii_text=mathpix.run_ocr(request.data['image'])
-        similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
-        # Iterate through the lists
-        examples=[]
-        for i in range(len(similar_questions_list)):
-            example={}
-            example['question']=similar_questions_list[i]
-            #example['diagrams']=similar_diagrams_list[i]
-            example['answer']=similar_answers_list[i]
-            examples.append(example)
-        request_examples=[]    
-        for i in range(len(examples)):
-              example={}
-              question=examples[i]['question']
-              answer=examples[i]['answer']
-              diagrams_list=re.findall(link_pattern,question) 
-              question=re.sub(img_pattern,'',question) 
-              question_and_answer=question + '\n' + answer 
-              ex=[]
-              if diagrams_list:
-                  for dig in diagrams_list:
-                      dig_dict={'type':'image','format':'jpg','data':dig}
-                      ex.append(dig_dict)
-              ex.append({'type':'latex','format':'tex','data':question_and_answer})        
-              example['example']=ex 
-              request_examples.append(example)    
-        return Response(data={'examples':request_examples},status=status.HTTP_200_OK)    
+        return Response(data={'message':'This Feature Has not yet been enable'},status=status.HTTP_401_UNAUTHORIZED)    
     
     def get(self,request):
         questions=Question.objects.all()
@@ -203,3 +172,39 @@ class UserView(APIView):
               request_examples.append(example)
               
         return Response(data={'examples':request_examples},status=status.HTTP_200_OK)
+    
+    
+    
+def post(self,request):
+    """handle client requests for examples to questions
+
+    Args:
+        request (json): The query question {'question':'','subjectindex':[0-5]}
+    """
+    query,ascii_text=mathpix.run_ocr(request.data['image'])
+    similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
+    # Iterate through the lists
+    examples=[]
+    for i in range(len(similar_questions_list)):
+        example={}
+        example['question']=similar_questions_list[i]
+        #example['diagrams']=similar_diagrams_list[i]
+        example['answer']=similar_answers_list[i]
+        examples.append(example)
+    request_examples=[]    
+    for i in range(len(examples)):
+            example={}
+            question=examples[i]['question']
+            answer=examples[i]['answer']
+            diagrams_list=re.findall(link_pattern,question) 
+            question=re.sub(img_pattern,'',question) 
+            question_and_answer=question + '\n' + answer 
+            ex=[]
+            if diagrams_list:
+                for dig in diagrams_list:
+                    dig_dict={'type':'image','format':'jpg','data':dig}
+                    ex.append(dig_dict)
+            ex.append({'type':'latex','format':'tex','data':question_and_answer})        
+            example['example']=ex 
+            request_examples.append(example)    
+    return Response(data={'examples':request_examples},status=status.HTTP_200_OK)

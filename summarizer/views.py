@@ -18,6 +18,7 @@ openai.api_key=os.environ['OPEN_AI_KEY']
 #openai.api_key=''
 # openai response method
 def get_response(prompt,end_of_text):
+       
         prompt=format_prompt(prompt)
         return openai.Completion.create(
           engine="davinci",
