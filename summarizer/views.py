@@ -21,11 +21,11 @@ def get_response(prompt,end_of_text):
        
         prompt=format_prompt(prompt)
         return openai.Completion.create(
-          engine="davinci",
+          engine="text-davinci-001",
           prompt=prompt,
-          temperature=0,
+          temperature=0.7,
           max_tokens=200,
-          top_p=1,
+          top_p=1.0,
           frequency_penalty=0.0,
           presence_penalty=0.0,
           stop=[end_of_text]
