@@ -28,7 +28,6 @@ def get_response(prompt,end_of_text):
           top_p=1.0,
           frequency_penalty=0.0,
           presence_penalty=0.0,
-          stop=[end_of_text]
         )['choices'][0]
         
         
