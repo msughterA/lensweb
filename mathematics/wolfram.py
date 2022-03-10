@@ -9,6 +9,7 @@ APPID=os.environ['WOLFRAM_APP_ID']
 
 # get the url in the right format
 def url_string(query,format):
+    query = urllib.parse.quote_plus(f"{query}")
     query_url = f"http://api.wolframalpha.com/v2/query?" \
         f"appid={APPID}" \
         f"&input={query}" \
@@ -35,6 +36,7 @@ def parse_json(json_data,key):
         return data
     else:
         data=[]
+        print(f'THIS IS THE QUERY RESULT {query_result}')
         data.append({'type':'text','format':'txt','data':'Oooops we could not find an answer to your question'})
         data.append({'type':'text','format':'txt','data':'Try any of the following'})
         data.append({'type':'text','format':'txt','data':'(a) snapping the question properly'})
