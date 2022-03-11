@@ -1,3 +1,4 @@
+from ast import Return
 from django.shortcuts import render
 from rest_framework.views import APIView
 from ocr import mathpix
@@ -11,6 +12,8 @@ class ChemistryView(APIView):
         # get data
         # validate subscription
         # pass query to wolfram
+        if True:
+            Response({'message':'Feature would be available Soon'},status=status.HTTP_401_UNAUTHORIZED)
         query,ascii_text=mathpix.run_ocr(request.data['image'])
         if request.data['mode']=='Balance':     
             result='this feature is coming soon'
