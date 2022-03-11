@@ -75,7 +75,8 @@ def text_parsing(text,elements):
 
         def __call__(self, match):
             self.called += 1
-            return elements[self.called-1]['value']
+            # parenthesis to ascii equations
+            return r'('+elements[self.called-1]['value']+r')'
 
     ascii_text=re.sub(pattern2,repl(),text)
     return ascii_text
