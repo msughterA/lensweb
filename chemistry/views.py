@@ -11,7 +11,7 @@ class ChemistryView(APIView):
         # get data
         # validate subscription
         # pass query to wolfram
-        query=mathpix.run_ocr(request.data['image'])
+        query,ascii_text=mathpix.run_ocr(request.data['image'])
         if request.data['mode']=='Balance':     
             result='this feature is coming soon'
             response_data={
@@ -23,7 +23,7 @@ class ChemistryView(APIView):
             }
             return Response(response_data,status=status.HTTP_200_OK)
         elif request.data['mode']=='Auto':
-            answer=auto_solve(query,'plaintext')
+            answer=auto_solve(ascii_text,'plaintext')
             response_data={
             'quesion':[
                 {'type':'latex','format':'tex','data':query}
