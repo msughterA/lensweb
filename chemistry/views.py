@@ -9,6 +9,10 @@ from rest_framework.response import Response
 # Create your views here.
 class ChemistryView(APIView):
     def post(self,request):
+            Response({'message':'Feature would be available Soon'},status=status.HTTP_401_UNAUTHORIZED)
+           
+         
+def post(self,request):
         # get data
         # validate subscription
         # pass query to wolfram
@@ -37,4 +41,4 @@ class ChemistryView(APIView):
         else:
             print('server error')
             return Response({'message':'Server error'},status=status.HTTP_401_UNAUTHORIZED)    
-         
+                  
