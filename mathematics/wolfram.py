@@ -1,3 +1,5 @@
+from wolframclient.evaluation import SecuredAuthenticationKey,WolframCloudSession
+from wolframclient.language import wl,wlexpr
 import requests
 import wolframalpha
 import urllib
@@ -7,6 +9,20 @@ import json
 
 APPID=os.environ['WOLFRAM_APP_ID']
 
+WOLFRAM_CLOUD_KEY=os.environ['WOLFRAM_CONSUMER_KEY']
+WOLFRAM_CLOUD_SECRET=os.environ['WOLFRAM_CONSUMER_SECRET']
+
+
+sak=SecuredAuthenticationKey(WOLFRAM_CLOUD_KEY,WOLFRAM_CLOUD_SECRET)
+# initialize the wolfram
+session=WolframCloudSession(credentials=sak)
+# process query
+def mathml_to_expression(mathml):
+    # start the session
+    session.start()
+    mathml=str(mathml)
+    expression=session.evaluate(wlexpr(f'''TexForm[{mathml}]'''))
+    print(expression)
 # get the url in the right format
 def url_string(query,format):
     query = urllib.parse.quote_plus(f"{query}")
@@ -33,6 +49,7 @@ def parse_json(json_data,key):
                     #data.append(subpod[key])
                     d=subpod[key]
                     data.append({'type':'latex','format':'tex','data':d})
+        print(mathml_to_expression(data[0]['data']))            
         return convert_mathml(data)           
         #return data
     else:
@@ -125,4 +142,5 @@ def convert_mathml(mathml_data):
         if res.status_code==200:
             return res.json()
     except:
+        print('An error occurred')
         return mathml_data     
