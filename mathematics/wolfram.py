@@ -21,7 +21,7 @@ def mathml_to_expression(mathml):
     # start the session
     session.start()
     mathml=str(mathml)
-    expression=session.evaluate(wlexpr(f'''TeXForm[{mathml}]'''))
+    expression=session.evaluate(wlexpr(f'''TeXForm[(sqrt(0.7) + sqrt(70))^2]'''))
     print(expression)
 # get the url in the right format
 def url_string(query,format):
