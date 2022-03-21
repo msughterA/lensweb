@@ -1,9 +1,9 @@
-
 import requests
 import wolframalpha
 import urllib
 import os
 import json
+
 
 APPID=os.environ['WOLFRAM_APP_ID']
 
@@ -32,8 +32,9 @@ def parse_json(json_data,key):
                 if key in subpod:
                     #data.append(subpod[key])
                     d=subpod[key]
-                    data.append({'type':'text','format':'txt','data':d})
-        return data
+                    data.append({'type':'latex','format':'tex','data':d})
+        convert_mathml(data)           
+        #return data
     else:
         data=[]
         print(f'THIS IS THE QUERY RESULT {query_result}')
@@ -114,4 +115,14 @@ def auto_solve(question,format):
     print(query)
     query_url=url_string(query,format)
     r = requests.get(query_url).json()
+    
     return parse_json(r,format)
+
+def convert_mathml(mathml_data):
+    url='https://lensnode.herokuapp.com/api/v1/covertmathml'
+    try:
+        res=requests.post(url,mathml_data)
+        if res.status_code==200:
+            return res.json()
+    except:
+        return mathml_data     
