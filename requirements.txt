@@ -53,6 +53,7 @@ paystackapi==2.0.0
 protobuf==3.19.1
 psycopg2==2.9.3
 psycopg2-binary==2.9.3
+py-asciimath==0.3.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 python-dateutil==2.8.2
