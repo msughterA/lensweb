@@ -20,10 +20,10 @@ WOLFRAM_CLOUD_SECRET=os.environ['WOLFRAM_CONSUMER_SECRET']
 sak=SecuredAuthenticationKey(WOLFRAM_CLOUD_KEY,WOLFRAM_CLOUD_SECRET)
 # initialize the wolfram
 session=WolframCloudSession(credentials=sak)
-# start the session
-session.start()
 # process query
 def mathml_to_expression(mathml):
+    # start the session
+    session.start()
     mathml=str(mathml)
     expression=session.evaluate(wlexpr(f'''XML`MathML`MathMLToExpression[{mathml}]'''))
     print(expression)
@@ -66,6 +66,7 @@ def run_ocr(base64_img):
         print(e)
         return 'error',False
         #abort(404, message="we are experiencing a technical issues with OCR please be patient")
+
 pattern=r"\\(\()(.*?)(\))"  
 pattern2=r"\\(\()(.*?)(\\\))"     
 def text_parsing(text,elements):
