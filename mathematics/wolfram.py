@@ -49,6 +49,7 @@ def parse_json(json_data,key):
                     #data.append(subpod[key])
                     d=subpod[key]
                     converted_d=convert_mathml(d)
+                    print(converted_d)
                     data.append({'type':'latex','format':'tex','data':converted_d})
         #print(mathml_to_expression(data[0]['data']))            
         #return convert_mathml(data)           
