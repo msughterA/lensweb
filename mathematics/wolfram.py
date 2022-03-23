@@ -21,7 +21,7 @@ session=WolframCloudSession(credentials=sak)
 repl=r"""<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
 <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
-
+repl="""<math>"""
 # process query
 def mathml_to_expression(mathml):
     # start the session
@@ -58,7 +58,7 @@ def parse_json(json_data,key):
                 
                 #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
                 data.append(t)       
-        return convert_mathml
+        return convert_mathml(data)
     else:
         data=[]
         print(f'THIS IS THE QUERY RESULT {query_result}')
