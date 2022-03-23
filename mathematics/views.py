@@ -52,7 +52,7 @@ class MathView(APIView):
             }
             return Response(response_data,status=status.HTTP_200_OK)
         elif request.data['mode']=='Auto':
-            answer=auto_solve(ascii_text,'plaintext')
+            answer=auto_solve(ascii_text,'mathml')
             print(f'THIS IS THE ANSWER {answer}')
             response_data={
             'question':[

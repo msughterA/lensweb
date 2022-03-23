@@ -49,7 +49,6 @@ def parse_json(json_data,key):
                     #data.append(subpod[key])
                     d=subpod[key]
                     converted_d=convert_mathml(d)
-                    print(converted_d)
                     data.append({'type':'latex','format':'tex','data':converted_d})
         #print(mathml_to_expression(data[0]['data']))            
         #return convert_mathml(data)           
@@ -157,10 +156,12 @@ repl=r"""<?xml version='1.0' encoding='UTF-8'?>
 mathml2tex = MathML2Tex()
 def convert_mathml(mathml_data):
     try:
-       
+       mathml_data=mathml_data.replace(r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
+    mathematica:form='StandardForm'
+    xmlns:mathematica='http://www.wolfram.com/XML/'>""",repl,mathml_data)   
        parsed=mathml2tex.translate(mathml_data, network=True, from_file=False,)
        parsed=r'\( ' +parsed.strip('$') +r' \)'
-       print('parsed')
+       #print()
        return parsed
     except:
        return mathml_data  
