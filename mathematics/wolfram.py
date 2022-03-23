@@ -64,7 +64,7 @@ def parse_json(json_data,key):
                     data.append({'type': 'latex', 'format': 'tex', 'data': t})
                 # print(parsed)
                 #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
-                data.append(parsed)       
+                #data.append(parsed)       
         return data
     else:
         data=[]
