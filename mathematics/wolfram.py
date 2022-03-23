@@ -16,12 +16,6 @@ mathml2tex = MathML2Tex()
 sak=SecuredAuthenticationKey(WOLFRAM_CLOUD_KEY,WOLFRAM_CLOUD_SECRET)
 # initialize the wolfram
 session=WolframCloudSession(credentials=sak)
-
-# Replacement text
-repl=r"""<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
-<math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
-
 # process query
 def mathml_to_expression(mathml):
     # start the session
@@ -52,6 +46,7 @@ def parse_json(json_data,key):
         for pod in pods:
             for subpod in pod['subpods']:
                 if key in subpod:
+                    d=subpod[key]
                     t=subpod[key].replace(r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
     mathematica:form='StandardForm'
     xmlns:mathematica='http://www.wolfram.com/XML/'>""",repl)
@@ -61,7 +56,7 @@ def parse_json(json_data,key):
                     data.append({'type':'latex','format':'tex','data':parsed})
                 except:
                     print("An error occured")
-                    data.append({'type': 'latex', 'format': 'tex', 'data': t})
+                    data.append({'type': 'latex', 'format': 'tex', 'data': d})
                 # print(parsed)
                 #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
                 #data.append(parsed)       
@@ -162,6 +157,9 @@ def convert_mathml(mathml_data):
 pattern=r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
                 mathematica:form='StandardForm'
                 xmlns:mathematica='http://www.wolfram.com/XML/'>"""
+repl=r"""<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
+<math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
 
 '''
 mathml2tex = MathML2Tex()
