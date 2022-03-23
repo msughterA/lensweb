@@ -48,11 +48,11 @@ def parse_json(json_data,key):
                 if key in subpod:
                     #data.append(subpod[key])
                     d=subpod[key]
-                    converted_d=convert_mathml(d)
-                    data.append({'type':'latex','format':'tex','data':converted_d})
+                    #converted_d=convert_mathml(d)
+                    data.append({'type':'latex','format':'tex','data':d})
         #print(mathml_to_expression(data[0]['data']))            
-        #return convert_mathml(data)           
-        return data
+        return convert_mathml(data)           
+        #return data
     else:
         data=[]
         print(f'THIS IS THE QUERY RESULT {query_result}')
@@ -135,7 +135,7 @@ def auto_solve(question,format):
     r = requests.get(query_url).json()
     
     return parse_json(r,format)
-'''
+
 def convert_mathml(mathml_data):
     url='https://lensnode.herokuapp.com/api/v1/covertmathml'
     try:
@@ -145,7 +145,7 @@ def convert_mathml(mathml_data):
     except:
         print('An error occurred')
         return mathml_data     
-'''
+
 pattern=r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
                 mathematica:form='StandardForm'
                 xmlns:mathematica='http://www.wolfram.com/XML/'>"""
@@ -153,6 +153,7 @@ repl=r"""<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
 <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
 
+'''
 mathml2tex = MathML2Tex()
 def convert_mathml(mathml_data):
     try:
@@ -165,3 +166,4 @@ def convert_mathml(mathml_data):
        return parsed
     except:
        return mathml_data  
+'''       
