@@ -12,7 +12,7 @@ APPID=os.environ['WOLFRAM_APP_ID']
 WOLFRAM_CLOUD_KEY=os.environ['WOLFRAM_CONSUMER_KEY']
 WOLFRAM_CLOUD_SECRET=os.environ['WOLFRAM_CONSUMER_SECRET']
 
-
+mathml2tex = MathML2Tex()
 sak=SecuredAuthenticationKey(WOLFRAM_CLOUD_KEY,WOLFRAM_CLOUD_SECRET)
 # initialize the wolfram
 session=WolframCloudSession(credentials=sak)
@@ -46,13 +46,20 @@ def parse_json(json_data,key):
         for pod in pods:
             for subpod in pod['subpods']:
                 if key in subpod:
-                    #data.append(subpod[key])
-                    d=subpod[key]
-                    #converted_d=convert_mathml(d)
-                    data.append({'type':'latex','format':'tex','data':d})
-        #print(mathml_to_expression(data[0]['data']))            
-        return convert_mathml(data)           
-        #return data
+                    t=subpod[key].replace(r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
+    mathematica:form='StandardForm'
+    xmlns:mathematica='http://www.wolfram.com/XML/'>""",repl)
+                try:
+                    parsed = mathml2tex.translate(t, network=True, from_file=False, )
+                    parsed = r'\( ' + parsed.strip('$') + r' \)'
+                    data.append({'type':'latex','format':'tex','data':f'''{parsed}'''})
+                except:
+                    print("An error occured")
+                    data.append({'type': 'latex', 'format': 'tex', 'data': f'''{t}'''})
+                # print(parsed)
+                #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
+                data.append(parsed)       
+        return data
     else:
         data=[]
         print(f'THIS IS THE QUERY RESULT {query_result}')
