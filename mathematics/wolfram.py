@@ -16,6 +16,12 @@ mathml2tex = MathML2Tex()
 sak=SecuredAuthenticationKey(WOLFRAM_CLOUD_KEY,WOLFRAM_CLOUD_SECRET)
 # initialize the wolfram
 session=WolframCloudSession(credentials=sak)
+
+# Replacement text
+repl=r"""<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
+<math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
+
 # process query
 def mathml_to_expression(mathml):
     # start the session
@@ -156,9 +162,6 @@ def convert_mathml(mathml_data):
 pattern=r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
                 mathematica:form='StandardForm'
                 xmlns:mathematica='http://www.wolfram.com/XML/'>"""
-repl=r"""<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
-<math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
 
 '''
 mathml2tex = MathML2Tex()
