@@ -6,6 +6,7 @@ import urllib
 import os
 import json
 from py_asciimath.translator.translator import MathML2Tex
+import re
 
 APPID=os.environ['WOLFRAM_APP_ID']
 
@@ -54,7 +55,7 @@ def parse_json(json_data,key):
                     try:
                         parsed = mathml2tex.translate(t, network=True, from_file=False, )
                         parsed = r'\( ' + parsed.strip('$') + r' \)'
-                        data.append({'type':'latex','format':'tex','data':parsed})
+                        data.append({'type':'latex','format':'tex','data':process_mathml_output(parsed)})
                     except:
                         print("An error occured")
                         data.append({'type': 'latex', 'format': 'tex', 'data': d})
@@ -162,6 +163,16 @@ repl=r"""<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
 <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
 
+#  This is the latex question \( \int \sin x d x \)
+# write a regex function to convert \mathrm{integral}
+# '\\(  \\mathrm{integral}\\mathrm{sin}\\left(x\\right)dx=-\\mathrm{cos}\\left(x\\right)+\\mathrm{constant} \\)'
+# replace \mathrm{integeral} with \int
+def process_mathml_output(mathml_data):
+    pattern=r'\\mathrm{integral}'
+    repl=r'\int'
+    # replace \mathrm{integeral} with \int
+    new_string=re.sub(pattern,repl,mathml_data)
+    return new_string
 '''
 mathml2tex = MathML2Tex()
 def convert_mathml(mathml_data):
