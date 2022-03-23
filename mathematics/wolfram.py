@@ -50,7 +50,7 @@ def parse_json(json_data,key):
                     t=subpod[key].replace(r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
     mathematica:form='StandardForm'
     xmlns:mathematica='http://www.wolfram.com/XML/'>""",repl)
-                    print(t)
+                    #print(t)
                     try:
                         parsed = mathml2tex.translate(t, network=True, from_file=False, )
                         parsed = r'\( ' + parsed.strip('$') + r' \)'
