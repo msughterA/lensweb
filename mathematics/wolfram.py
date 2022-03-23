@@ -55,17 +55,10 @@ def parse_json(json_data,key):
                     t=subpod[key].replace(r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
     mathematica:form='StandardForm'
     xmlns:mathematica='http://www.wolfram.com/XML/'>""",repl)
-                try:
-                    parsed = mathml2tex.translate(t, network=True, from_file=False, )
-                    parsed = r'\( ' + parsed.strip('$') + r' \)'
-                    data.append({'type':'latex','format':'tex','data':parsed})
-                except:
-                    print("An error occured")
-                    data.append({'type': 'latex', 'format': 'tex', 'data': t})
-                # print(parsed)
+                
                 #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
-                #data.append(parsed)       
-        return data
+                data.append(t)       
+        return convert_mathml
     else:
         data=[]
         print(f'THIS IS THE QUERY RESULT {query_result}')
