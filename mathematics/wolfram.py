@@ -21,7 +21,7 @@ session=WolframCloudSession(credentials=sak)
 repl=r"""<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE math PUBLIC "-//W3C//DTD MathML 2.0//EN" "http://www.w3.org/Math/DTD/mathml2/mathml2.dtd">
 <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink">"""
-repl="""<math>"""
+
 # process query
 def mathml_to_expression(mathml):
     # start the session
@@ -55,10 +55,17 @@ def parse_json(json_data,key):
                     t=subpod[key].replace(r"""<math xmlns='http://www.w3.org/1998/Math/MathML'
     mathematica:form='StandardForm'
     xmlns:mathematica='http://www.wolfram.com/XML/'>""",repl)
-                
+                try:
+                    parsed = mathml2tex.translate(t, network=True, from_file=False, )
+                    parsed = r'\( ' + parsed.strip('$') + r' \)'
+                    data.append({'type':'latex','format':'tex','data':parsed})
+                except:
+                    print("An error occured")
+                    data.append({'type': 'latex', 'format': 'tex', 'data': t})
+                # print(parsed)
                 #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
-                data.append(t)       
-        return convert_mathml(data)
+                #data.append(parsed)       
+        return data
     else:
         data=[]
         print(f'THIS IS THE QUERY RESULT {query_result}')
