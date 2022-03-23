@@ -169,10 +169,12 @@ repl=r"""<?xml version='1.0' encoding='UTF-8'?>
 # replace \mathrm{integeral} with \int
 def process_mathml_output(mathml_data):
     pattern=r'\\mathrm{integral}'
-    repl=r'\int'
+    repl=r'\\int'
     # replace \mathrm{integeral} with \int
     new_string=re.sub(pattern,repl,mathml_data)
     return new_string
+
+
 '''
 mathml2tex = MathML2Tex()
 def convert_mathml(mathml_data):
