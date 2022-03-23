@@ -52,10 +52,10 @@ def parse_json(json_data,key):
                 try:
                     parsed = mathml2tex.translate(t, network=True, from_file=False, )
                     parsed = r'\( ' + parsed.strip('$') + r' \)'
-                    data.append({'type':'latex','format':'tex','data':f'''{parsed}'''})
+                    data.append({'type':'latex','format':'tex','data':parsed})
                 except:
                     print("An error occured")
-                    data.append({'type': 'latex', 'format': 'tex', 'data': f'''{t}'''})
+                    data.append({'type': 'latex', 'format': 'tex', 'data': t})
                 # print(parsed)
                 #t=mathml2tex.translate(subpod[key], network=True, from_file=False,)
                 data.append(parsed)       
