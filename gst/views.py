@@ -19,15 +19,15 @@ def format_prompt(prompt):
 def get_answer(prompt):
     prompt=format_prompt(prompt)
     return openai.Completion.create(
-  engine="text-davinci-002",
-  prompt=prompt,
-  temperature=0,
-  max_tokens=100,
-  top_p=1,
-  frequency_penalty=0.0,
-  presence_penalty=0.0,
-  stop=["\n"]
-)['choices'][0]
+                                    engine="text-davinci-002",
+                                    prompt=prompt,
+                                    temperature=0,
+                                    max_tokens=100,
+                                    top_p=1,
+                                    frequency_penalty=0.0,
+                                    presence_penalty=0.0,
+                                    stop=["\n"]
+                                    )['choices'][0]
     
     
 class GstView(APIView):
@@ -39,15 +39,16 @@ class GstView(APIView):
         # check for subscription validity
         if request.data['mode']=='Theory':
             answer=get_answer(query)
+            #print(answer)
             response_data={
                 'question':[
                     {'type':'latex','format':'tex','data':query}
                 ],
                 'answer':[
-                    {'type':'latex','format':'tex','data':answer}
+                    {'type':'latex','format':'tex','data':answer['text']}
                 ]
             } 
             return Response(response_data,status=status.HTTP_200_OK)  
         elif request.data['mode']=='Objective':
-            return Response({'message':'These Feature is not yet available try the using the Theory mode to answer the question'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message':'These Feature is not yet available try the using the Theory mode to answer the question'},status=status.HTTP_401_UNAUTHORIZED)
         
