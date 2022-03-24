@@ -48,4 +48,6 @@ class GstView(APIView):
                 ]
             } 
             return Response(response_data,status=status.HTTP_200_OK)  
+        elif request.data['mode']=='Objective':
+            return Response({'message':'These Feature is not yet available try the using the Theory mode to answer the question'},status=status.HTTP_400_BAD_REQUEST)
         
