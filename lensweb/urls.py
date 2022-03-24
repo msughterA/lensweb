@@ -22,5 +22,6 @@ urlpatterns = [
     path('payments/',include('payments.urls')),
     path('summarizer/',include('summarizer.urls')),
     path('mathematics/',include('mathematics.urls')),
-    path('chemistry/',include('chemistry.urls'))
+    path('chemistry/',include('chemistry.urls')),
+    path('gst/',include('gst.urls'))
 ]

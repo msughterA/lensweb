@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'ocr',
     'summarizer',
     'mathematics',
-    'nlp'
+    'nlp',
+    'gst'
 ]
 
 MIDDLEWARE = [
