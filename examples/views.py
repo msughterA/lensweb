@@ -16,7 +16,7 @@ from ocr import mathpix
 import pickle
 import ast
 import re
-
+import requests
 
 
 # Number of Examples
@@ -92,9 +92,9 @@ def get_questions_and_embeddings(subject):
         
     return questions_list,np.array(embeddings_list), answers_list,diagrams_list
 
-
+'''
 # get Mathematical questions, embeddings and diagrams
-math_questions,math_embeddings,math_answers,math_diagrams=get_questions_and_embeddings('mathematics')
+#math_questions,math_embeddings,math_answers,math_diagrams=get_questions_and_embeddings('mathematics')
 
 # Load the embedding module
 #embed=hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
@@ -135,7 +135,7 @@ def ranker(query):
         similar_answers_list.append(similar_answers_list_1[indx])
         similar_diagrams_list.append(similar_diagrams_list_1[indx])
     return similar_questions_list,similar_diagrams_list,similar_answers_list
-    
+'''    
 
 img_pattern='<img>(.*?)</img>'
 link_pattern='(?:http\:|https\:)?\/\/.*\.(?:png|jpg)'
@@ -169,11 +169,15 @@ class UserView(APIView):
                       ex.append(dig_dict)
               ex.append({'type':'latex','format':'tex','data':question_and_answer})         
               example['example']=ex 
+              example['question']=question
+              example['answer']=answer
               request_examples.append(example)
               
         return Response(data={'examples':request_examples},status=status.HTTP_200_OK)
     
-    
+# Dummy ranker
+def ranker(query):
+    return [],[],[]    
     
 def post(self,request):
     """handle client requests for examples to questions

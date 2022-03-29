@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from ocr import mathpix
 import os
-
+from . import wolfram
 
 
 # Create your views here.
@@ -27,7 +27,7 @@ def get_answer(prompt):
                                     frequency_penalty=0.0,
                                     presence_penalty=0.0,
                                     stop=["\n"]
-                                    )['choices'][0]
+                                    )['choices'][0]['text']
     
     
 class GstView(APIView):
@@ -38,17 +38,21 @@ class GstView(APIView):
             return Response({'message':'Server error'},status=status.HTTP_400_BAD_REQUEST)    
         # check for subscription validity
         if request.data['mode']=='Theory':
-            answer=get_answer(query)
+            is_wolfram_answered,wa=wolfram.wolfram_answer(query,'plaintext')
+            if is_wolfram_answered==True:
+                answer=wa
+            else:    
+                answer=get_answer(query)
             #print(answer)
             response_data={
                 'question':[
                     {'type':'latex','format':'tex','data':query}
                 ],
                 'answer':[
-                    {'type':'latex','format':'tex','data':answer['text']}
+                    {'type':'latex','format':'tex','data':answer}
                 ]
             } 
             return Response(response_data,status=status.HTTP_200_OK)  
         elif request.data['mode']=='Objective':
-            return Response({'message':'These Feature is not yet available try the using the Theory mode to answer the question'},status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'message':'This Feature is not yet available try using the Theory mode to answer the question'},status=status.HTTP_401_UNAUTHORIZED)
         
