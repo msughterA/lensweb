@@ -142,6 +142,8 @@ link_pattern='(?:http\:|https\:)?\/\/.*\.(?:png|jpg)'
         
 class UserView(APIView):
     def post(self,request):
+        query,ascii_text=mathpix.run_ocr(request.data['image'])
+        response=requests.post('https://lensai.herokuapp.com/embedder/embedder')
         return Response(data={'message':'This Feature Has not yet been enable'},status=status.HTTP_401_UNAUTHORIZED)    
     
     def get(self,request):
@@ -212,3 +214,4 @@ def post(self,request):
             example['example']=ex 
             request_examples.append(example)    
     return Response(data={'examples':request_examples},status=status.HTTP_200_OK)
+
