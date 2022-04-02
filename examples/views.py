@@ -96,9 +96,9 @@ def get_questions_and_embeddings(subject):
 math_questions,math_embeddings,math_answers,math_diagrams=get_questions_and_embeddings('mathematics')
 
 # Load the embedding module
-#embed=hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
-EMBED_DIR=r'C:\\Users\\AYERHAN MSUGHTER\\Desktop\\Enigma\\module_useT'
-embed=hub.load(EMBED_DIR)
+embed=hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+#EMBED_DIR=r'C:\\Users\\AYERHAN MSUGHTER\\Desktop\\Enigma\\module_useT'
+#embed=hub.load(EMBED_DIR)
 
 def embed_question(data):
     embedding=embed([data])
