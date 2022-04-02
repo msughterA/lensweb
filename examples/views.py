@@ -1,4 +1,5 @@
 import base64
+from cProfile import run
 from django.shortcuts import redirect, render
 from .forms import AdminLogInForm, UploadFileForm
 from .models import Question,Diagram
@@ -160,7 +161,9 @@ class UserView(APIView):
         for i in range(len(examples)):
                 example={}
                 question=examples[i]['question']
+                question=run_parse(question)
                 answer=examples[i]['answer']
+                answer=run_parse(answer)
                 diagrams_list=re.findall(link_pattern,question) 
                 question=re.sub(img_pattern,'',question) 
                 question_and_answer=question + '\n' + answer 
@@ -212,3 +215,14 @@ def post(self,request):
         response=requests.post('https://lensai.herokuapp.com/embedder/embedder')
         return Response(data={'message':'This Feature Has not yet been enable'},status=status.HTTP_401_UNAUTHORIZED)    
         
+pattern=r'((?<!\$)\${1,2}(?!\$)(.*?)(?<!\$)\${1,2}(?!\$))'
+class repl:
+    def __init__(self):
+        self.called = 0
+
+    def __call__(self, match):
+        self.called += 1
+        print(match.group(0).strip('$'))
+        return r'\( '+ match.group(0).strip('$')+r' \)'
+def run_parse(t):
+    return re.sub(pattern,repl(),t)    
