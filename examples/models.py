@@ -8,12 +8,12 @@ import numpy as np
 
 # question model
 class Question(models.Model):
-    text=models.TextField(max_length=500)
+    text=models.TextField(max_length=4000)
     subject=models.TextField(max_length=20,null=True)
     embedding=models.TextField(max_length=12000)
     exam=models.TextField(max_length=10)
     year=models.CharField(max_length=6,null=True)
-    answer=models.TextField(max_length=2000,blank=True,null=True)
+    answer=models.TextField(max_length=4000,blank=True,null=True)
     
    
 # diagram model
