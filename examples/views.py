@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-import tensorflow_hub as hub
+#import tensorflow_hub as hub
 import json
 from enum import Enum
 from ocr import mathpix
@@ -66,7 +66,7 @@ def adminUpload(request):
         
     return render(request,'examples/uploadfile.html')   
 
-
+'''
 def get_questions_and_embeddings(subject):
     """Fetch the questions and embedding for a subject
 
@@ -225,4 +225,5 @@ class repl:
         print(match.group(0).strip('$'))
         return r'\( '+ match.group(0).strip('$')+r' \)'
 def run_parse(t):
-    return re.sub(pattern,repl(),t)    
+    return re.sub(pattern,repl(),t)   
+'''    
