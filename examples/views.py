@@ -66,7 +66,7 @@ def adminUpload(request):
         
     return render(request,'examples/uploadfile.html')   
 
-'''
+
 def get_questions_and_embeddings(subject):
     """Fetch the questions and embedding for a subject
 
@@ -226,4 +226,4 @@ class repl:
         return r'\( '+ match.group(0).strip('$')+r' \)'
 def run_parse(t):
     return re.sub(pattern,repl(),t)   
-'''    
+  
