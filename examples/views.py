@@ -1,5 +1,4 @@
 import base64
-from cProfile import run
 from django.shortcuts import redirect, render
 from .forms import AdminLogInForm, UploadFileForm
 from .models import Question,Diagram
@@ -10,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
-import tensorflow_hub as hub
+#import tensorflow_hub as hub
 import json
 from enum import Enum
 from ocr import mathpix
@@ -93,17 +92,18 @@ def get_questions_and_embeddings(subject):
         
     return questions_list,np.array(embeddings_list), answers_list,diagrams_list
 
+'''
 # get Mathematical questions, embeddings and diagrams
-math_questions,math_embeddings,math_answers,math_diagrams=get_questions_and_embeddings('mathematics')
+#math_questions,math_embeddings,math_answers,math_diagrams=get_questions_and_embeddings('mathematics')
 
 # Load the embedding module
-embed=hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
-#EMBED_DIR=r'C:\\Users\\AYERHAN MSUGHTER\\Desktop\\Enigma\\module_useT'
+#embed=hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
+EMBED_DIR=r'C:\\Users\\AYERHAN MSUGHTER\\Desktop\\Enigma\\module_useT'
 #embed=hub.load(EMBED_DIR)
 
 def embed_question(data):
-    embedding=embed([data])
-    #embedding=[]
+    #embedding=embed([data])
+    embedding=[]
     return embedding
 def get_top_n_most_similar_questions_with_answers_similarites(embedding,q_embeddings):
     print(len(q_embeddings))
@@ -135,49 +135,17 @@ def ranker(query):
         similar_answers_list.append(similar_answers_list_1[indx])
         similar_diagrams_list.append(similar_diagrams_list_1[indx])
     return similar_questions_list,similar_diagrams_list,similar_answers_list
-  
+'''    
 
 img_pattern='<img>(.*?)</img>'
 link_pattern='(?:http\:|https\:)?\/\/.*\.(?:png|jpg)'
         
 class UserView(APIView):
     def post(self,request):
-        """handle client requests for examples to questions
-
-        Args:
-            request (json): The query question {'question':'','subjectindex':[0-5]}
-        """
         query,ascii_text=mathpix.run_ocr(request.data['image'])
-        similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
-        # Iterate through the lists
-        examples=[]
-        for i in range(len(similar_questions_list)):
-            example={}
-            example['question']=similar_questions_list[i]
-            #example['diagrams']=similar_diagrams_list[i]
-            example['answer']=similar_answers_list[i]
-            examples.append(example)
-        request_examples=[]    
-        for i in range(len(examples)):
-                example={}
-                question=examples[i]['question']
-                question=run_parse(question)
-                answer=examples[i]['answer']
-                answer=run_parse(answer)
-                diagrams_list=re.findall(link_pattern,question) 
-                question=re.sub(img_pattern,'',question) 
-                question_and_answer=question + '\n' + answer 
-                ex=[]
-                if diagrams_list:
-                    for dig in diagrams_list:
-                        dig_dict={'type':'image','format':'jpg','data':dig}
-                        ex.append(dig_dict)
-                ex.append({'type':'latex','format':'tex','data':question_and_answer})        
-                example['example']=ex 
-                request_examples.append(example)    
-        return Response(data={'examples':request_examples},status=status.HTTP_200_OK)
-
-
+        response=requests.post('https://lensai.herokuapp.com/embedder/embedder')
+        return Response(data={'message':'This Feature Has not yet been enable'},status=status.HTTP_401_UNAUTHORIZED)    
+    
     def get(self,request):
         questions=Question.objects.all()
         diagrams=Diagram.objects.all()
@@ -209,21 +177,41 @@ class UserView(APIView):
               
         return Response(data={'examples':request_examples},status=status.HTTP_200_OK)
     
-
+# Dummy ranker
+def ranker(query):
+    return [],[],[]    
+    
 def post(self,request):
-        query,ascii_text=mathpix.run_ocr(request.data['image'])
-        response=requests.post('https://lensai.herokuapp.com/embedder/embedder')
-        return Response(data={'message':'This Feature Has not yet been enable'},status=status.HTTP_401_UNAUTHORIZED)    
-        
-pattern=r'((?<!\$)\${1,2}(?!\$)(.*?)(?<!\$)\${1,2}(?!\$))'
-class repl:
-    def __init__(self):
-        self.called = 0
+    """handle client requests for examples to questions
 
-    def __call__(self, match):
-        self.called += 1
-        print(match.group(0).strip('$'))
-        return r'\( '+ match.group(0).strip('$')+r' \)'
-def run_parse(t):
-    return re.sub(pattern,repl(),t)   
-  
+    Args:
+        request (json): The query question {'question':'','subjectindex':[0-5]}
+    """
+    query,ascii_text=mathpix.run_ocr(request.data['image'])
+    similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
+    # Iterate through the lists
+    examples=[]
+    for i in range(len(similar_questions_list)):
+        example={}
+        example['question']=similar_questions_list[i]
+        #example['diagrams']=similar_diagrams_list[i]
+        example['answer']=similar_answers_list[i]
+        examples.append(example)
+    request_examples=[]    
+    for i in range(len(examples)):
+            example={}
+            question=examples[i]['question']
+            answer=examples[i]['answer']
+            diagrams_list=re.findall(link_pattern,question) 
+            question=re.sub(img_pattern,'',question) 
+            question_and_answer=question + '\n' + answer 
+            ex=[]
+            if diagrams_list:
+                for dig in diagrams_list:
+                    dig_dict={'type':'image','format':'jpg','data':dig}
+                    ex.append(dig_dict)
+            ex.append({'type':'latex','format':'tex','data':question_and_answer})        
+            example['example']=ex 
+            request_examples.append(example)    
+    return Response(data={'examples':request_examples},status=status.HTTP_200_OK)
+
