@@ -7,7 +7,10 @@ import os
 import json
 from py_asciimath.translator.translator import MathML2Tex
 import re
+from examples.views import *
+import openai
 
+openai.api_key=os.environ['OPEN_AI_KEY']
 APPID=os.environ['WOLFRAM_APP_ID']
 
 WOLFRAM_CLOUD_KEY=os.environ['WOLFRAM_CONSUMER_KEY']
@@ -36,7 +39,7 @@ def url_string(query,format):
     return query_url
 
 # make a function to parse the json
-def parse_json(json_data,key):
+def parse_json(json_data,key,query):
     #get the query result
     query_result=json_data['queryresult']
     #get the pods
@@ -64,14 +67,35 @@ def parse_json(json_data,key):
                 #data.append(parsed)       
         return data
     else:
-        data=[]
-        print(f'THIS IS THE QUERY RESULT {query_result}')
-        data.append({'type':'text','format':'txt','data':'Oooops we could not find an answer to your question'})
-        data.append({'type':'text','format':'txt','data':'Try any of the following'})
-        data.append({'type':'text','format':'txt','data':'(a) snapping the question properly'})
-        data.append({'type':'text','format':'txt','data':'(b) Re-writing the question in a shorter form'})
-        data.append({'type':'text','format':'txt','data':'(c) removing unnecessary details from the question'})
-        return data
+        try:
+            # the process of solving the question with codex
+            # 1. get the most similar questions from db and rank
+            similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
+            # 2. put them into a prompt script for codex to generate a rough solution
+            prompt_script=""" """
+            for i,example in enumerate(similar_questions_list):
+                prompt_example=f'''#Question {i}: {similar_questions_list[i]['problem']}\n#Question {i} solution: {similar_questions_list[i]['solution']}'''
+                prompt_script=prompt_script+'\n\n\n'+prompt_example
+                if i==len(similar_questions_list)-1:
+                    prompt_script=prompt_script+'\n\n\n'+f'''#Question {i+1}: {query}\n#Question {i+1} solution:'''
+            # 3. give the prompt to codex to generate the solution
+            rough_solution=get_response_rough(prompt_script)
+            # 4. put the rough solution into an execution prompt script to generate
+            # the code the would give the solution
+            execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
+            # 5. run the executable script generated to get the solution
+            solution,err=exe(execution_script)
+            data.append({'type':'text','format':'txt','data':solution})
+            return data
+        except:    
+            data=[]
+            print(f'THIS IS THE QUERY RESULT {query_result}')
+            data.append({'type':'text','format':'txt','data':'Oooops we could not find an answer to your question'})
+            data.append({'type':'text','format':'txt','data':'Try any of the following'})
+            data.append({'type':'text','format':'txt','data':'(a) snapping the question properly'})
+            data.append({'type':'text','format':'txt','data':'(b) Re-writing the question in a shorter form'})
+            data.append({'type':'text','format':'txt','data':'(c) removing unnecessary details from the question'})
+            return data
 
 # Method for solving equations
 def solve_equations(equation):
@@ -144,7 +168,7 @@ def auto_solve(question,format):
     query_url=url_string(query,format)
     r = requests.get(query_url).json()
     
-    return parse_json(r,format)
+    return parse_json(r,format,query)
 
 def convert_mathml(mathml_data):
     url='https://lensnode.herokuapp.com/api/v1/covertmathml'
@@ -188,4 +212,74 @@ def convert_mathml(mathml_data):
        return parsed
     except:
        return mathml_data  
-'''       
+'''  
+def get_response_rough(prompt):
+       
+        #prompt=format_prompt(prompt)
+        return openai.Completion.create(
+          engine="code-davinci-002",
+          prompt=prompt,
+          temperature=0,
+          max_tokens=300,
+          top_p=1.0,
+          frequency_penalty=0.0,
+          presence_penalty=0.0,
+        stop=['\n\n\n#']
+        )['choices'][0]['text']
+# method to generate the code for the solution        
+def program_response(prompt):
+       
+        #prompt=format_prompt(prompt)
+        return openai.Completion.create(
+          engine="code-davinci-002",
+          prompt=prompt,
+          temperature=0,
+          max_tokens=200,
+          top_p=1.0,
+          frequency_penalty=0.0,
+          presence_penalty=0.0,
+        )['choices'][0]['text']    
+        
+def generate_execution_script(problem,solution):
+    execution_script=f"""
+    import re
+    import sympy as sp
+    import numpy as np
+
+    '''
+    #Question: {problem}
+    #Solution: {solution}
+    '''
+    '''
+    write a program to verify if the solution to the question above is valid.
+    if it is valid print the previous solution else find a valid solution and print it
+    '''
+    """  
+    execution_script=program_response(execution_script)   
+    return execution_script       
+def ranking(query):
+      similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)   
+# the process of solving the question with codex
+# 1. get the most similar questions from db and rank
+# 2. put them into a prompt script for codex to generate a rough solution
+# 3. put the rough solution into an execution prompt script to generate 
+# the code the would give the solution
+# 4. run the executable script generated to get the solution
+def exe(code):
+    import sys
+    import io
+
+    # create file-like string to capture output
+    codeOut = io.StringIO()
+    codeErr = io.StringIO()
+
+    # capture output and errors
+    sys.stdout = codeOut
+    sys.stderr = codeErr
+
+    exec(code)
+
+    # restore stdout and stderr
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__
+    return codeOut,codeErr

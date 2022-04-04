@@ -5,7 +5,6 @@ from ocr import mathpix
 from .wolfram import simplify_expression,solve_equations,auto_solve
 from rest_framework import status
 from rest_framework.response import Response
-
 # Create your views here.
 class MathView(APIView):
     def post(self,request):
