@@ -85,7 +85,7 @@ def parse_json(json_data,key,query):
             execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
             # 5. run the executable script generated to get the solution
             solution,err=exe(execution_script)
-            data.append({'type':'text','format':'txt','data':solution})
+            data.append({'type':'text','format':'txt','data':solution.getvalue()})
             return data
         except:    
             data=[]
