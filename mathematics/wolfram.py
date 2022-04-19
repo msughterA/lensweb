@@ -84,10 +84,12 @@ def parse_json(json_data,key,query):
             # the code the would give the solution
             execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
             # 5. run the executable script generated to get the solution
+            print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
             solution,err=exe(execution_script)
             data.append({'type':'text','format':'txt','data':solution.getvalue()})
             return data
-        except:    
+        except Exception as e: 
+            print(f'THIS IS THE ERROR THAT OCCURRED {e}')   
             data=[]
             print(f'THIS IS THE QUERY RESULT {query_result}')
             data.append({'type':'text','format':'txt','data':'Oooops we could not find an answer to your question'})
