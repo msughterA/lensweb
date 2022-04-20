@@ -89,6 +89,7 @@ def parse_json(json_data,key,query):
             # 5. run the executable script generated to get the solution
             print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
             solution,err=exe(execution_script)
+            print(err)
             data.append({'type':'text','format':'txt','data':solution.getvalue()})
             return data
         except Exception as e: 
@@ -247,7 +248,7 @@ def program_response(prompt):
         
 def generate_execution_script(problem,solution):
     execution_script=f"""
-    import re
+import re
 import sympy as sp
 import numpy as np
 
