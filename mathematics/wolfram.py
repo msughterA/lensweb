@@ -248,18 +248,35 @@ def program_response(prompt):
 def generate_execution_script(problem,solution):
     execution_script=f"""
     import re
-    import sympy as sp
-    import numpy as np
+import sympy as sp
+import numpy as np
 
-    '''
-    #Question: {problem}
-    '''
-    '''
-    write a program to solve the question and print the final solutions
-    '''
+'''
+#Question: A particle moves along the curves x=2t^(2) y=t^(2)-4t,z=3t-5. Find component of its acceleration at time t=1.
+'''
+'''
+write a program to solve the question and print the final solutions
+'''
+#solution
+t = sp.Symbol('t')
+x = 2*t**2
+y = t**2 - 4*t
+z = 3*t - 5
+vx = sp.diff(x,t)
+vy = sp.diff(y,t)
+vz = sp.diff(z,t)
+ax = sp.diff(vx,t)
+ay = sp.diff(vy,t)
+az = sp.diff(vz,t)
+print('ax = ',ax)
+print('ay = ',ay)
+print('az = ',az)
+print('ax at t = 1 = ',ax.subs(t,1))
+print('ay at t = 1 = ',ay.subs(t,1))
+print('az at t = 1 = ',az.subs(t,1))
     """  
-    gpt3_code=program_response(execution_script)   
-    return execution_script+gpt3_code     
+    #gpt3_code=program_response(execution_script)   
+    return execution_script #+gpt3_code     
 def ranking(query):
       similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)   
 # the process of solving the question with codex
