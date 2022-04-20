@@ -68,6 +68,7 @@ def parse_json(json_data,key,query):
         return data
     else:
         try:
+            data=[]
             # the process of solving the question with codex
             # 1. get the most similar questions from db and rank
             similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
@@ -83,6 +84,7 @@ def parse_json(json_data,key,query):
             # 4. put the rough solution into an execution prompt script to generate
             # the code the would give the solution
             #execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
+            print(f'THIS IS THE ROUGH SOLUTION {rough_solution}')
             execution_script=generate_execution_script(query,rough_solution)
             # 5. run the executable script generated to get the solution
             print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
@@ -258,8 +260,8 @@ def generate_execution_script(problem,solution):
     if it is valid print the previous solution else find a valid solution and print it
     '''
     """  
-    execution_script=program_response(execution_script)   
-    return execution_script       
+    gpt3_code=program_response(execution_script)   
+    return execution_script+gpt3_code     
 def ranking(query):
       similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)   
 # the process of solving the question with codex
