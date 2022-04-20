@@ -255,7 +255,7 @@ def generate_execution_script(problem,solution):
     #Question: {problem}
     '''
     '''
-    write a program to solve the question
+    write a program to solve the question and print the final solutions
     '''
     """  
     gpt3_code=program_response(execution_script)   
