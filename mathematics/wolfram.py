@@ -84,12 +84,11 @@ def parse_json(json_data,key,query):
             # 4. put the rough solution into an execution prompt script to generate
             # the code the would give the solution
             #execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
-            print(f'THIS IS THE ROUGH SOLUTION {rough_solution}')
+            print('THIS IS THE ROUGH SOLUTION {rough_solution}')
             execution_script=generate_execution_script(query,rough_solution)
             # 5. run the executable script generated to get the solution
             print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
-            solution,err=exe(execution_script)
-            print(err)
+            #solution,err=exe(execution_script)
             data.append({'type':'text','format':'txt','data':solution.getvalue()})
             return data
         except Exception as e: 
@@ -248,36 +247,21 @@ def program_response(prompt):
         
 def generate_execution_script(problem,solution):
     execution_script=f"""
-import re
-import sympy as sp
-import numpy as np
+    import re
+    import sympy as sp
+    import numpy as np
 
-'''
-#Question: A particle moves along the curves x=2t^(2) y=t^(2)-4t,z=3t-5. Find component of its acceleration at time t=1.
-'''
-'''
-write a program to solve the question and print the final solutions
-'''
-#solution
-t = sp.Symbol('t')
-x = 2*t**2
-y = t**2 - 4*t
-z = 3*t - 5
-vx = sp.diff(x,t)
-vy = sp.diff(y,t)
-vz = sp.diff(z,t)
-ax = sp.diff(vx,t)
-ay = sp.diff(vy,t)
-az = sp.diff(vz,t)
-print('ax = ',ax)
-print('ay = ',ay)
-print('az = ',az)
-print('ax at t = 1 = ',ax.subs(t,1))
-print('ay at t = 1 = ',ay.subs(t,1))
-print('az at t = 1 = ',az.subs(t,1))
+    '''
+    #Question: {problem}
+    #Solution: {solution}
+    '''
+    '''
+    write a program to verify if the solution to the question above is valid.
+    if it is valid print the previous solution else find a valid solution and print it
+    '''
     """  
-    #gpt3_code=program_response(execution_script)   
-    return execution_script #+gpt3_code     
+    gpt3_code=program_response(execution_script)   
+    return execution_script+gpt3_code     
 def ranking(query):
       similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)   
 # the process of solving the question with codex
