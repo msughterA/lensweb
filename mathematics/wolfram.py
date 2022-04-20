@@ -253,11 +253,9 @@ def generate_execution_script(problem,solution):
 
     '''
     #Question: {problem}
-    #Solution: {solution}
     '''
     '''
-    write a program to verify if the solution to the question above is valid.
-    if it is valid print the previous solution else find a valid solution and print it
+    write a program to solve the question
     '''
     """  
     gpt3_code=program_response(execution_script)   
