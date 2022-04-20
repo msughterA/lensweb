@@ -74,7 +74,7 @@ def parse_json(json_data,key,query):
             # 2. put them into a prompt script for codex to generate a rough solution
             prompt_script=""" """
             for i in range(len(similar_questions_list)):
-                prompt_example=f'''#Question {i}: {similar_questions_list[i]['question']}\n#Question {i} solution: {similar_answers_list[i]['answer']}'''
+                prompt_example=f'''#Question {i}: {similar_questions_list[i]}\n#Question {i} solution: {similar_answers_list[i]}'''
                 prompt_script=prompt_script+'\n\n\n'+prompt_example
                 if i==len(similar_questions_list)-1:
                     prompt_script=prompt_script+'\n\n\n'+f'''#Question {i+1}: {query}\n#Question {i+1} solution:'''
