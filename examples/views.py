@@ -73,8 +73,8 @@ def get_questions_and_embeddings(subject):
         subject (string): the name of the subject you would like to get
     """
     #questions=Question.objects.filter(subject__iexact=subject)
-    #questions=Question.objects.all()
-    questions=[]
+    questions=Question.objects.all()
+    #questions=[]
     questions_list=[]
     embeddings_list=[]
     answers_list=[]
