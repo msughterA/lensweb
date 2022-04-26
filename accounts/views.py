@@ -63,9 +63,7 @@ class VerifyDataView(APIView):
                 elif validate_duplicate_phone_number(data['phone_number']):
                     return Response({'message':'phone number already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_duplicate_email(data['email']):
-                    return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
-                elif validate_password_strength(data['password']):
-                    return Response({'message':'password strength is weak'},status=status.HTTP_401_UNAUTHORIZED)				
+                    return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)		
                 return Response({'message':'Details are valid'},status=status.HTTP_200_OK  )
             print('Data is not valid')    
             #return Response({'message':'Bad request'},status=status.HTTP_400_BAD_REQUEST)
@@ -91,8 +89,6 @@ class AccountView(APIView):
                     return Response({'message':'phone number already taken'},status=status.HTTP_401_UNAUTHORIZED)
                 elif validate_duplicate_email(data['email']):
                     return Response({'message':'email already taken'},status=status.HTTP_401_UNAUTHORIZED)
-                elif validate_password_strength(data['password']):
-                    return Response({'message':'password strength is weak'},status=status.HTTP_401_UNAUTHORIZED)				
                 
                 serializer.save()
                 user=Account.objects.filter(phone_number__iexact=data['phone_number']).get()
