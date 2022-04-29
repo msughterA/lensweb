@@ -26,7 +26,6 @@ def validate_duplicate_data(username,email,phone_number):
 def validate_duplicate_username(username):	
 	# if not accountDB.objects.filter(username__iexact=username)
 	#if username in accountDB.objects.all().username:
-	
 	if Account.objects.filter(username__iexact=username):
 		print("username taken")
 		return True
@@ -36,7 +35,6 @@ def validate_duplicate_phone_number(phone_number):
 def validate_duplicate_email(email):		
 	if Account.objects.filter(email__iexact=email):
 	    return True	
-
 def run_validations(username,email,phone_number,password):
     # check if the details are not empty
     #validate_details_isNot_empty(username,email,phone_number,password)

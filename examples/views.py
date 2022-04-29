@@ -223,4 +223,9 @@ class repl:
         print(match.group(0).strip('$'))
         return r'\( '+ match.group(0).strip('$')+r' \)'
 def run_parse(t):
-    return re.sub(pattern,repl(),t)   
+    a=re.sub(pattern,repl(),t) 
+    a=re.sub(r'\\begin\{align\*\}',r'\( \begin{align*}',a)
+    a=re.sub(r'\\end\{align\*\}',r'end{align*} \)',a)
+    #a=re.sub(r'\\\[',r'\( \[',a)
+    #a=re.sub(r'\\\]',r'\] \)',a)
+    return a 
