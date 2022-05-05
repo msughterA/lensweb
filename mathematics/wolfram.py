@@ -247,18 +247,18 @@ def program_response(prompt):
         
 def generate_execution_script(problem,solution):
     execution_script=f"""
-    import re
-    import sympy as sp
-    import numpy as np
+import re
+import sympy as sp
+import numpy as np
 
-    '''
-    #Question: {problem}
-    #Solution: {solution}
-    '''
-    '''
-    write a program to verify if the solution to the question above is valid.
-    if it is valid print the previous solution else find a valid solution and print it
-    '''
+'''
+#Question: {problem}
+#Solution: {solution}
+'''
+'''
+write a program to verify if the solution to the question above is valid.
+if it is valid print the previous solution else find a valid solution and print it
+'''
     """  
     gpt3_code=program_response(execution_script)   
     return execution_script+gpt3_code     
