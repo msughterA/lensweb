@@ -85,7 +85,7 @@ def parse_json(json_data,key,query):
             # the code the would give the solution
             #execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
             print('THIS IS THE ROUGH SOLUTION {rough_solution}')
-            #execution_script=generate_execution_script(query,rough_solution)
+            execution_script=generate_execution_script(query,rough_solution)
             # 5. run the executable script generated to get the solution
             #print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
             #solution,err=exe(execution_script)
@@ -239,7 +239,7 @@ def program_response(prompt):
           engine="code-davinci-002",
           prompt=prompt,
           temperature=0,
-          max_tokens=200,
+          max_tokens=1000,
           top_p=1.0,
           frequency_penalty=0.0,
           presence_penalty=0.0,
