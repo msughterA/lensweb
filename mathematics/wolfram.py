@@ -85,9 +85,9 @@ def parse_json(json_data,key,query):
             # the code the would give the solution
             #execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
             print('THIS IS THE ROUGH SOLUTION {rough_solution}')
-            execution_script=generate_execution_script(query,rough_solution)
+            #execution_script=generate_execution_script(query,rough_solution)
             # 5. run the executable script generated to get the solution
-            print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
+            #print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
             #solution,err=exe(execution_script)
             data.append({'type':'latex','format':'tex','data':run_parse(rough_solution)})
             return data
