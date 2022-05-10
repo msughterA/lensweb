@@ -16,7 +16,7 @@ class AccountSerializer(serializers.ModelSerializer):
       username=serializers.CharField(max_length=20)
       phone_number=serializers.CharField(max_length=20)
       email=serializers.EmailField()
-      password=serializers.CharField(max_length=8)
+      password=serializers.CharField(max_length=20)
       device_id=serializers.CharField(max_length=100)
       #date=serializers.DateTimeField()      
 
@@ -39,7 +39,7 @@ class LoginSerializer(serializers.ModelSerializer):
         model=Login
         fields='__all__'
     phone_number=serializers.CharField(max_length=20)
-    password=serializers.CharField(max_length=8)
+    password=serializers.CharField(max_length=20)
     isActive=serializers.BooleanField()
     device_id=serializers.CharField(max_length=100)
 
