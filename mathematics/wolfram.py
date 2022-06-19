@@ -222,7 +222,7 @@ def get_response_rough(prompt):
        
         #prompt=format_prompt(prompt)
         return openai.Completion.create(
-          engine="text-ada-001",
+          engine="text-babbage-001",
           prompt=prompt,
           temperature=0,
           max_tokens=600,
@@ -234,7 +234,7 @@ def get_response_rough(prompt):
 # method to generate the code for the solution        
 def program_response(prompt):
         # code-davinci-002
-        # text-ada-001
+        # text-babbage-001
         # text-ada-001
         #prompt=format_prompt(prompt)
         return openai.Completion.create(
