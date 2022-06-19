@@ -222,7 +222,7 @@ def get_response_rough(prompt):
        
         #prompt=format_prompt(prompt)
         return openai.Completion.create(
-          engine="code-davinci-002",
+          engine="text-ada-001",
           prompt=prompt,
           temperature=0,
           max_tokens=600,
