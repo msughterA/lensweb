@@ -21,7 +21,7 @@ import requests
 
 
 # Number of Examples
-NUMBER_OF_EXAMPLES=2
+NUMBER_OF_EXAMPLES=5
 # subjects
 class subjects(Enum):
     mathematics=1
@@ -222,6 +222,16 @@ class repl:
         self.called += 1
         print(match.group(0).strip('$'))
         return r'\( '+ match.group(0).strip('$')+r' \)'
+#pattern2=r"\\(\()(.*?)(\\\))"     
+# #def text_parsing(text,elements):
+# class repl2:
+#     def __init__(self):
+#         self.called = 0
+
+#     def __call__(self, match):
+#         self.called += 1
+#         # parenthesis to ascii equations
+#         return elements[self.called-1]['value']    
 def run_parse(t):
     a=re.sub(pattern,repl(),t) 
     a=re.sub(r'\\begin\{align\*\}',r'\( \\begin{align*}',a)

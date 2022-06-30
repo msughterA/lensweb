@@ -73,12 +73,13 @@ def parse_json(json_data,key,query):
             # 1. get the most similar questions from db and rank
             similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)
             # 2. put them into a prompt script for codex to generate a rough solution
-            prompt_script=""" """
-            for i in range(len(similar_questions_list)):
-                prompt_example=f'''#Question {i}: {similar_questions_list[i]}\n#Question {i} solution: {similar_answers_list[i]}'''
-                prompt_script=prompt_script+'\n\n\n'+prompt_example
-                if i==len(similar_questions_list)-1:
-                    prompt_script=prompt_script+'\n\n\n'+f'''#Question {i+1}: {query}\n#Question {i+1} solution:'''
+            # prompt_script=""" """
+            # for i in range(len(similar_questions_list)):
+            #     prompt_example=f'''#Question {i}: {similar_questions_list[i]}\n#Question {i} solution: {similar_answers_list[i]}'''
+            #     prompt_script=prompt_script+'\n\n\n'+prompt_example
+            #     if i==len(similar_questions_list)-1:
+            #         prompt_script=prompt_script+'\n\n\n'+f'''#Question {i+1}: {query}\n#Question {i+1} solution:'''
+            prompt_script=fine_tuned_script(similar_questions_list[0],similar_answers_list[0],similar_questions_list[4],similar_answers_list[4],query)        
             # 3. give the prompt to codex to generate the solution
             rough_solution=get_response_rough(prompt_script)
             # 4. put the rough solution into an execution prompt script to generate
@@ -264,6 +265,13 @@ write a program to find the solution to the question above
     """  
     gpt3_code=program_response(execution_script)   
     return execution_script+gpt3_code     
+def fine_tuned_script(q1,a1,q2,a2,p):
+    f_script=f"""\n        <question>\n        <problem>\n        {q1}
+        \n        <\/problem>\n        <solution>\n       {a1}
+        \n        <\/solution>\n        <\/question>\n        <question>\n        <problem>\n        {q2}
+        \n        <\/problem>\n        <solution>\n       {a2}        <\/solution>\n        <\/question>\n        <question>\n        <problem>\n        {p}\n        <\/problem>\n        <solution>\n        
+        """+r'\n\n###\n\n'
+    return f_script    
 def ranking(query):
       similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)   
 # the process of solving the question with codex
