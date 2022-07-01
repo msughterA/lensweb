@@ -273,8 +273,9 @@ def fine_tuned_script(q1,a1,q2,a2,p):
         """+r'\n\n###\n\n'
     return f_script    
 def fine_tuned_response(p):
+    print(f'This is the prompt {p}')
     a=openai.Completion.create(
-    model='ft-SZmLXvWxwdzvkEvM8VOixfyn',
+    model='curie:ft-personal-2022-06-28-17-55-02',
     prompt=p,
     temperature=0,
     top_p=1.0,
