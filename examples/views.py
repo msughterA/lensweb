@@ -222,16 +222,18 @@ class repl:
         self.called += 1
         print(match.group(0).strip('$'))
         return r'\( '+ match.group(0).strip('$')+r' \)'
-#pattern2=r"\\(\()(.*?)(\\\))"     
-# #def text_parsing(text,elements):
-# class repl2:
-#     def __init__(self):
-#         self.called = 0
+pattern2=r"\\(\()(.*?)(\\\))"     
+#def text_parsing(text,elements):
+class repl2:
+    def __init__(self):
+        self.called = 0
 
-#     def __call__(self, match):
-#         self.called += 1
-#         # parenthesis to ascii equations
-#         return elements[self.called-1]['value']    
+    def __call__(self, match):
+        self.called += 1
+        # parenthesis to ascii equations
+        a=match.group(0).strip(r'\(')
+        a=a.strip(r'\)')
+        return r'$' + a + r'$'  
 def run_parse(t):
     a=re.sub(pattern,repl(),t) 
     a=re.sub(r'\\begin\{align\*\}',r'\( \\begin{align*}',a)
@@ -239,3 +241,7 @@ def run_parse(t):
     #a=re.sub(r'\\\[',r'\( \[',a)
     #a=re.sub(r'\\\]',r'\] \)',a)
     return a 
+
+def run_parse2(t):
+    a=re.sub(pattern2,repl2(),t)
+    return a

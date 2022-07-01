@@ -79,13 +79,13 @@ def parse_json(json_data,key,query):
             #     prompt_script=prompt_script+'\n\n\n'+prompt_example
             #     if i==len(similar_questions_list)-1:
             #         prompt_script=prompt_script+'\n\n\n'+f'''#Question {i+1}: {query}\n#Question {i+1} solution:'''
-            prompt_script=fine_tuned_script(similar_questions_list[0],similar_answers_list[0],similar_questions_list[4],similar_answers_list[4],query)        
+            prompt_script=fine_tuned_script(similar_questions_list[0],similar_answers_list[0],similar_questions_list[4],similar_answers_list[4],run_parse2(query))        
             # 3. give the prompt to codex to generate the solution
-            rough_solution=get_response_rough(prompt_script)
+            rough_solution=fine_tuned_response(prompt_script)
             # 4. put the rough solution into an execution prompt script to generate
             # the code the would give the solution
             #execution_script=f"""{prompt_script}\n\n\n{rough_solution}"""
-            print('THIS IS THE ROUGH SOLUTION {rough_solution}')
+            #print('THIS IS THE ROUGH SOLUTION {rough_solution}')
             #execution_script=generate_execution_script(query,rough_solution)
             # 5. run the executable script generated to get the solution
             #print(f'THIS IS THE EXECUTION_SCRIPT{execution_script}')
@@ -272,6 +272,17 @@ def fine_tuned_script(q1,a1,q2,a2,p):
         \n        <\/problem>\n        <solution>\n       {a2}        <\/solution>\n        <\/question>\n        <question>\n        <problem>\n        {p}\n        <\/problem>\n        <solution>\n        
         """+r'\n\n###\n\n'
     return f_script    
+def fine_tuned_response(p):
+    a=openai.Completion.create(
+    model='ft-SZmLXvWxwdzvkEvM8VOixfyn',
+    prompt=p,
+    temperature=0,
+    top_p=1.0,
+    frequency_penalty=0.0,
+    presence_penalty=0.0,
+    )
+    print(f'This is the finetuned response {a}')
+    return a['choices'][0]['text']
 def ranking(query):
       similar_questions_list, similar_diagrams_list,similar_answers_list=ranker(query)   
 # the process of solving the question with codex
