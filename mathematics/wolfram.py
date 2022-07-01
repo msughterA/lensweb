@@ -276,7 +276,12 @@ def fine_tuned_response(p):
     print(f'This is the prompt {p}')
     a=openai.Completion.create(
     model='curie:ft-personal-2022-06-28-17-55-02',
-    prompt=p
+    prompt=p,
+     temperature=0,
+          max_tokens=2000,
+          top_p=1.0,
+          frequency_penalty=0.0,
+          presence_penalty=0.0,
     )
     print(f'This is the finetuned response {a}')
     return a['choices'][0]['text']
