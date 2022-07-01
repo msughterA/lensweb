@@ -278,7 +278,7 @@ def fine_tuned_response(p):
     model='curie:ft-personal-2022-06-28-17-55-02',
     prompt=p,
      temperature=0,
-          max_tokens=2000,
+          max_tokens=1000,
           top_p=1.0,
           frequency_penalty=0.0,
           presence_penalty=0.0,
