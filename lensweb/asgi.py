@@ -8,9 +8,21 @@ https://docs.djangoproject.com/en/4.0/howto/deployment/asgi/
 """
 
 import os
-
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
+import fileshare.routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'lensweb.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lensweb.settings")
 
 application = get_asgi_application()
+
+# application = get_asgi_application()
+application = ProtocolTypeRouter(
+    {
+        # "http": AsgiHandler(),
+        "websocket": AuthMiddlewareStack(
+            URLRouter(fileshare.routing.websocket_urlpatterns)
+        ),
+    }
+)

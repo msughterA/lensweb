@@ -8,17 +8,16 @@ import numpy as np
 
 # question model
 class Question(models.Model):
-    text=models.TextField(max_length=12000)
-    subject=models.TextField(max_length=20,null=True)
-    embedding=models.TextField(max_length=12000)
-    exam=models.TextField(max_length=10)
-    year=models.CharField(max_length=6,null=True)
-    answer=models.TextField(max_length=12000,blank=True,null=True)
-    
-   
+    text = models.TextField(max_length=12000)
+    subject = models.TextField(max_length=20, null=True)
+    embedding = models.TextField(max_length=12000)
+    exam = models.TextField(max_length=10)
+    year = models.CharField(max_length=6, null=True)
+    answer = models.TextField(max_length=12000, blank=True, null=True)
+
+
 # diagram model
 class Diagram(models.Model):
-    url=models.URLField()
-    base64string=models.TextField(max_length=300)
-    question=models.ForeignKey(Question,on_delete=models.CASCADE)    
-    
+    url = models.URLField()
+    base64string = models.TextField(max_length=300)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
