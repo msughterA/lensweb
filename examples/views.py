@@ -2,13 +2,13 @@ import base64
 from cProfile import run
 from django.shortcuts import redirect, render
 from .forms import AdminLogInForm, UploadFileForm
-from .models import Question, Diagram
+from .models import Question, Collection, Answer, AnswerText, QuestionText
 from django.views.decorators.http import require_POST
-from .serializers import QuestionSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from sklearn.metrics.pairwise import cosine_similarity
+from .utils import CacheData
 import numpy as np
 import tensorflow_hub as hub
 import json
@@ -30,78 +30,29 @@ class subjects(Enum):
     biology = 4
 
 
-# Create your views here.
-def index(request):
-    adminLogInForm = AdminLogInForm()
-    context = {"adminLogInForm": adminLogInForm}
-    return render(request, "examples/index.html", context)
+# Cache data instance
+
+cache_data = CacheData()
 
 
-@require_POST
-def adminLogin(request):
-    adminLogInForm = AdminLogInForm(request.POST)
-    context = {}
-    # if  the credentials are valid
-    if adminLogInForm.is_valid():
-        email = request.POST["email"]
-        password = request.POST["password"]
-    # Render the adminView
-    # Display an Error on the form
-    return render(request, "examples/uploadfile.html", context)
+def get_questions_and_embeddings():
+
+    collections = Collection.objects.all()
+    # loop over all the collections to get all the questions with their diagrams
+    for colllection in collections:
+        questions = Question.objects.filter(id=colllection.id)
+        for question in questions:
+            texts = question.text_set.all()
+            # diagrams = question.diagram_set.all()
+            # texts would store dictionaries textId, questionId,
+            # text embedding would be stored in text_embeddings
+            # for text in texts:
+            # text_dict = {}
+            cache_data.append_text_embedding(question.text_embedding)
+            cache_data.append_text_id(question.id)
 
 
-@require_POST
-def adminUpload(request):
-    form = UploadFileForm(request.POST, request.FILES)
-
-    context = {"form": form}
-    if form.is_valid():
-        file = request.FILES["file"]
-        json_file = json.load(file)
-        data = json_file["questions"]
-        # print(json_file[0])
-        if ".txt" not in file.name:
-            redirect("uploadfile.html")
-        serializer = QuestionSerializer(data=data, many=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-
-    return render(request, "examples/uploadfile.html")
-
-
-def get_questions_and_embeddings(subject):
-    """Fetch the questions and embedding for a subject
-    Args:
-        subject (string): the name of the subject you would like to get
-    """
-    # questions=Question.objects.filter(subject__iexact=subject)
-    questions = Question.objects.all()
-    # questions=[]
-    questions_list = []
-    embeddings_list = []
-    answers_list = []
-    diagrams_list = []
-    for question in questions:
-        # Get the quesion text
-        questions_list.append(question.text)
-        # Get the question embedding
-        # make sure to decode the binary field
-        embeddings_list.append(ast.literal_eval(question.embedding))
-        # Get the answer
-        answers_list.append(question.answer)
-        # Get the diagrams
-        diagrams_list.append(question.diagram_set.all())
-
-    return questions_list, np.array(embeddings_list), answers_list, diagrams_list
-
-
-# get Mathematical questions, embeddings and diagrams
-(
-    math_questions,
-    math_embeddings,
-    math_answers,
-    math_diagrams,
-) = get_questions_and_embeddings("mathematics")
+# get_questions_and_embeddings()
 
 # Load the embedding module
 embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder/4")
@@ -115,43 +66,64 @@ def embed_question(data):
     return embedding
 
 
-def get_top_n_most_similar_questions_with_answers_similarites(embedding, q_embeddings):
-    print(len(q_embeddings))
-    print(f"print embedding shape {np.shape(embedding)}")
-    print(f"print q_embedding shape {np.shape(q_embeddings)}")
-    similarities = cosine_similarity(embedding, q_embeddings)
+def get_top_n_most_similar_questions_with_answers_similarites(embedding):
+    similarities = cosine_similarity(embedding, np.array(cache_data.text_embeddings))
+    # unique_ids = []
+    # votes = []
+    # for id,vote in zip(cache_data.text_ids,similarities):
+    #     if id not in unique_ids:
+    #         unique_ids.append(id)
+    #         votes.append(vote)
+    #     else:
+    #         id_index = unique_ids.index(id)
+    #         votes[id_index] = votes[id_index]+vote
+
     return similarities
 
 
 def ranker(query):
     embedded_question = embed_question(query)
     similarity_list = get_top_n_most_similar_questions_with_answers_similarites(
-        embedded_question, math_embeddings
+        embedded_question
     )
     idx = np.argpartition(
         similarity_list[0],
         -NUMBER_OF_EXAMPLES,
     )[-NUMBER_OF_EXAMPLES:]
     indices = idx[np.argsort((-similarity_list[0])[idx])]
-    similar_questions_list = []
-    similar_questions_list_1 = []
-    similar_answers_list = []
-    similar_answers_list_1 = []
-    similar_diagrams_list = []
-    similar_diagrams_list_1 = []
-    for index in indices:
+    questions_and_answers = []
+    for i, index in enumerate(indices):
+        qa_dict = {}
+        question_texts = []
+        question_diagrams = []
+        answer_texts = []
+        answer_diagrams = []
         # print(f'THE CLOSEST QUESTION IS {questions[index]}')
-        similar_questions_list.append(math_questions[index])
-        similar_questions_list_1.append(math_questions[index])
-        similar_answers_list_1.append(math_answers[index])
-        similar_diagrams_list_1.append(math_diagrams[index])
-    similar_questions_list = list(dict.fromkeys(similar_questions_list))
-    for item in similar_questions_list:
-        indx = similar_questions_list_1.index(item)
-        # similar_answers_list = list(dict.fromkeys(similar_answers_list))
-        similar_answers_list.append(similar_answers_list_1[indx])
-        similar_diagrams_list.append(similar_diagrams_list_1[indx])
-    return similar_questions_list, similar_diagrams_list, similar_answers_list
+        question_id = cache_data.text_ids(index)
+        question = Question.objects.get(id=question_id)
+        answer = Answer.objects.get(question_id=question_id)
+        qa_dict["questionMap"] = question.map
+        qa_dict["answerMap"] = answer.map
+        # get all question texts for this question
+        for text in question.questiontext_set.all():
+            question_texts.append(text.text)
+        # get all question diagrams for this question
+        for diagram in question.questiondiagram_set.all():
+            question_diagrams.append(diagram.base64string)
+        # get all answer texts for the answer to the question
+        for text in answer.answertext_set.all():
+            answer_texts.append(text)
+        # get all answer diagrams for the answer to the question
+        for diagram in answer.answerdiagram_set.all():
+            answer_diagrams.append(diagram)
+
+        qa_dict["questionTexts"] = question_texts
+        qa_dict["questionDiagrams"] = question_diagrams
+        qa_dict["answerDiagrams"] = answer_diagrams
+        qa_dict["answerTexts"] = answer_texts
+
+        questions_and_answers.append(qa_dict)
+    return questions_and_answers
 
 
 img_pattern = "<img>(.*?)</img>"
@@ -165,69 +137,48 @@ class UserView(APIView):
             request (json): The query question {'question':'','subjectindex':[0-5]}
         """
         query, ascii_text = mathpix.run_ocr(request.data["image"])
-        similar_questions_list, similar_diagrams_list, similar_answers_list = ranker(
-            query
+        similar_questions_and_answers = ranker(query)
+        return Response(
+            data={"examples": similar_questions_and_answers}, status=status.HTTP_200_OK
         )
-        # Iterate through the lists
-        examples = []
-        for i in range(len(similar_questions_list)):
-            example = {}
-            example["question"] = similar_questions_list[i]
-            # example['diagrams']=similar_diagrams_list[i]
-            example["answer"] = similar_answers_list[i]
-            examples.append(example)
-        request_examples = []
-        for i in range(len(examples)):
-            example = {}
-            question = examples[i]["question"]
-            question = run_parse(question)
-            answer = examples[i]["answer"]
-            answer = run_parse(answer)
-            diagrams_list = re.findall(link_pattern, question)
-            question = re.sub(img_pattern, "", question)
-            question_and_answer = question + "\n" + answer
-            ex = []
-            if diagrams_list:
-                for dig in diagrams_list:
-                    dig_dict = {"type": "image", "format": "jpg", "data": dig}
-                    ex.append(dig_dict)
-            ex.append({"type": "latex", "format": "tex", "data": question_and_answer})
-            example["example"] = ex
-            request_examples.append(example)
-        return Response(data={"examples": request_examples}, status=status.HTTP_200_OK)
 
     def get(self, request):
+        questions_and_answers = []
         questions = Question.objects.all()
-        diagrams = Diagram.objects.all()
-        examples = []
         for i, question in enumerate(questions):
-            example = {}
-            example["question"] = question.text
-            example["answer"] = question.answer
-            # example['diagrams']=question.diagram_set.all()
-            examples.append(example)
-        request_examples = []
-        for i in range(len(examples)):
-            example = {}
-            question = examples[i]["question"]
-            answer = examples[i]["answer"]
-            diagrams_list = re.findall(link_pattern, question)
-            question = re.sub(img_pattern, "", question)
-            question_and_answer = (
-                "Question" + "\n" + question + "\n" + "Answer" + answer
-            )
-            ex = []
-            if diagrams_list:
-                for dig in diagrams_list:
-                    dig_dict = {"type": "image", "format": "jpg", "data": dig}
-                    ex.append(dig_dict)
-            ex.append({"type": "latex", "format": "tex", "data": question_and_answer})
-            example["example"] = ex
-            example["question"] = question
-            example["answer"] = answer
-            request_examples.append(example)
+            qa_dict = {}
+            question_texts = []
+            question_diagrams = []
+            answer_texts = []
+            answer_diagrams = []
+            # print(f'THE CLOSEST QUESTION IS {questions[index]}')
+            question_id = question.id
+            question = Question.objects.get(id=question_id)
+            answer = Answer.objects.get(question_id=question_id)
+            qa_dict["questionMap"] = question.map
+            qa_dict["answerMap"] = answer.map
+            # get all question texts for this question
+            for text in question.questiontext_set.all():
+                question_texts.append(text.text)
+            # get all question diagrams for this question
+            for diagram in question.questiondiagram_set.all():
+                question_diagrams.append(diagram.base64string)
+            # get all answer texts for the answer to the question
+            for text in answer.answertext_set.all():
+                answer_texts.append(text)
+            # get all answer diagrams for the answer to the question
+            for diagram in answer.answerdiagram_set.all():
+                answer_diagrams.append(diagram)
 
-        return Response(data={"examples": request_examples}, status=status.HTTP_200_OK)
+            qa_dict["questionTexts"] = question_texts
+            qa_dict["questionDiagrams"] = question_diagrams
+            qa_dict["answerDiagrams"] = answer_diagrams
+            qa_dict["answerTexts"] = answer_texts
+
+            questions_and_answers.append(qa_dict)
+        return Response(
+            data={"all questions": questions_and_answers}, status=status.HTTP_200_OK
+        )
 
 
 def post(self, request):
