@@ -8,6 +8,8 @@ class FileSend(models.Model):
     chunkCount = models.IntegerField()
     # the index of the last chunk sent
     pointer = models.IntegerField()
+    # device id of the client
+    deviceId = models.TextField(max_length=500)
 
 
 class FileReceive(models.Model):
@@ -16,3 +18,5 @@ class FileReceive(models.Model):
     chunkCount = models.IntegerField()
     # the index of the last chunk sent
     pointer = models.IntegerField()
+    # deviceId of the client
+    deviceId = models.TextField(max_length=500)

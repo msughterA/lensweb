@@ -2,7 +2,15 @@ import base64
 from cProfile import run
 from django.shortcuts import redirect, render
 from .forms import AdminLogInForm, UploadFileForm
-from .models import Question, Collection, Answer, AnswerText, QuestionText
+from .models import (
+    Question,
+    Collection,
+    Answer,
+    AnswerText,
+    QuestionText,
+    QuestionDiagram,
+    AnswerDiagram,
+)
 from django.views.decorators.http import require_POST
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -42,14 +50,15 @@ def get_questions_and_embeddings():
     for colllection in collections:
         questions = Question.objects.filter(id=colllection.id)
         for question in questions:
-            texts = question.text_set.all()
+            # texts = question.text_set.all()
             # diagrams = question.diagram_set.all()
             # texts would store dictionaries textId, questionId,
             # text embedding would be stored in text_embeddings
             # for text in texts:
             # text_dict = {}
-            cache_data.append_text_embedding(question.text_embedding)
-            cache_data.append_text_id(question.id)
+            cache_data.append_data(
+                question_id=question.id, text_embedding=question.text_embedding
+            )
 
 
 # get_questions_and_embeddings()
@@ -106,16 +115,16 @@ def ranker(query):
         qa_dict["answerMap"] = answer.map
         # get all question texts for this question
         for text in question.questiontext_set.all():
-            question_texts.append(text.text)
+            question_texts.append(text.question_text)
         # get all question diagrams for this question
         for diagram in question.questiondiagram_set.all():
             question_diagrams.append(diagram.base64string)
         # get all answer texts for the answer to the question
         for text in answer.answertext_set.all():
-            answer_texts.append(text)
+            answer_texts.append(text.answer_text)
         # get all answer diagrams for the answer to the question
         for diagram in answer.answerdiagram_set.all():
-            answer_diagrams.append(diagram)
+            answer_diagrams.append(diagram.base64string)
 
         qa_dict["questionTexts"] = question_texts
         qa_dict["questionDiagrams"] = question_diagrams
@@ -128,6 +137,32 @@ def ranker(query):
 
 img_pattern = "<img>(.*?)</img>"
 link_pattern = "(?:http\:|https\:)?\/\/.*\.(?:png|jpg)"
+
+
+class DeleteQuestionView(APIView):
+    def post(self, request):
+        quesion_id = request.data["questionId"]
+        if Question.objects.filter(id=quesion_id):
+            return Response(
+                data={"message": "question does not exist"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        else:
+            # while deleting make sure to delete the entire collection
+            # if the question your deleting is the last in it
+            question = Question.objects.filter(id=quesion_id).get()
+            collection = question.collection
+            question.delete()
+            if collection.length == 1:
+                collection.delete()
+            else:
+                collection.length = collection.length - 1
+                # call the function to update the collections database
+                collection.save()
+            return Response(
+                data={"message": "Question deleted successfully"},
+                status=status.HTTP_200_OK,
+            )
 
 
 class UserView(APIView):

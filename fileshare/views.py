@@ -128,23 +128,27 @@ class FileReceiveView(APIView):
         filetype = request.data["type"]
         fileId = request.data["fileId"]
         userId = request.data["userId"]
+        deviceId = request.data["deviceId"]
+
         if filetype == "collection":
             # create a file at media/filereceive/collections/userId_fileId.json
-            filepath = os.path.join(FILE_RECEIVE_COLLECTION, f"{userId}_{fileId}.json")
+            filepath = os.path.join(
+                FILE_RECEIVE_COLLECTION, f"{userId}_{deviceId}_{fileId}.json"
+            )
             with open(filepath, "w") as f:
                 print("json send file created")
 
         else:
             # create a file at media/filereceive/collections/userId_fileId.json
             filepath = os.path.join(
-                FILE_RECEIVE_QUESTION_AND_ANSWER, f"{userId}_{fileId}.json"
+                FILE_RECEIVE_QUESTION_AND_ANSWER, f"{userId}_{deviceId}_{fileId}.json"
             )
             with open(filepath, "w") as f:
                 print("json reception file created")
         return Response(
             {
                 "message": "success",
-                "data": {"socket": f"ws/filereceive/{userId}/{fileId}"},
+                "data": {"socket": f"ws/filereceive/{userId}/{deviceId}/{fileId}"},
             },
             status=status.HTTP_200_OK,
         )
@@ -155,6 +159,7 @@ class FileSendView(APIView):
         filetype = request.data["type"]
         fileId = request.data["fileId"]
         userId = request.data["userId"]
+        deviceId = request.data["deviceId"]
         if filetype == "collection":
             if not check_collection_exists(id):
                 return Response(
@@ -162,8 +167,10 @@ class FileSendView(APIView):
                     status=status.HTTP_404_NOT_FOUND,
                 )
             collection_json = getCollection(fileId)
-            # write the json file to media/filesend/collections/userId_fileId.txt
-            filepath = os.path.join(FILE_SEND_COLLECTION, f"{userId}_{fileId}.json")
+            # write the json file to media/filesend/collections/userId_deviceId_fileId.txt
+            filepath = os.path.join(
+                FILE_SEND_COLLECTION, f"{userId}_{deviceId}_{fileId}.json"
+            )
             with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(collection_json, f, ensure_ascii=False, indent=4)
 
@@ -176,14 +183,14 @@ class FileSendView(APIView):
             collection_json = getQuestionAndAnswer(fileId)
             # write the json file media/filesend/questionAndAnswer/userId_fileId.txt
             filepath = os.path.join(
-                FILE_SEND_QUESTION_AND_ANSWER, f"{userId}_{fileId}.json"
+                FILE_SEND_QUESTION_AND_ANSWER, f"{userId}_{deviceId}_{fileId}.json"
             )
             with open(filepath, "w") as f:
                 json.dump(collection_json, f, ensure_ascii=False, indent=4)
         return Response(
             {
                 "message": "Success",
-                "data": {"socket": f"ws/filesend/{userId}/{fileId}/{0}"},
+                "data": {"socket": f"ws/filesend/{userId}/{deviceId}/{fileId}"},
             },
             status=status.HTTP_200_OK,
         )

@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.urls import path, include
+from django_tus.views import TusUpload, FileDownloadListAPIView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,5 +27,8 @@ urlpatterns = [
     path("summarizer/", include("summarizer.urls")),
     path("mathematics/", include("mathematics.urls")),
     path("chemistry/", include("chemistry.urls")),
+    path("upload/", TusUpload.as_view(), name="tus_upload"),
+    path("upload/<uuid:resource_id>", TusUpload.as_view(), name="tus_upload_chunks"),
     path("gst/", include("gst.urls")),
+    path("notifications/", include("notification.urls")),
 ]

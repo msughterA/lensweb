@@ -14,13 +14,14 @@ class Collection(models.Model):
     postedBy = models.ForeignKey(Account, on_delete=models.CASCADE)
     school = models.TextField()
     year = models.IntegerField()
+    length = models.IntegerField()
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, auto_now=True)
 
 
 # question model
 class Question(models.Model):
-    map = models.TextField(blank=True, null=True)
+    text_map = models.TextField(blank=True, null=True)
     text_embedding = models.TextField(blank=True, null=True)
     collection = models.ForeignKey(
         Collection, on_delete=models.CASCADE, blank=True, null=True
@@ -29,7 +30,7 @@ class Question(models.Model):
 
 # text model
 class QuestionText(models.Model):
-    text = models.TextField(blank=True, null=True)
+    question_text = models.TextField(blank=True, null=True)
     # text_embedding = models.TextField()
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE, blank=True, null=True
@@ -40,14 +41,14 @@ class Answer(models.Model):
     question = models.ForeignKey(
         Question, on_delete=models.CASCADE, blank=True, null=True
     )
-    map = models.TextField(blank=True, null=True)
+    answer_map = models.TextField(blank=True, null=True)
     collection = models.ForeignKey(
         Collection, on_delete=models.CASCADE, blank=True, null=True
     )
 
 
 class AnswerText(models.Model):
-    text = models.TextField(blank=True, null=True)
+    answer_text = models.TextField(blank=True, null=True)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, blank=True, null=True)
 
 

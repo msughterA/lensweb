@@ -1,29 +1,28 @@
 class CacheData:
-    texts = []
-    text_ids = []
-    diagrams = []
+    text_ids_map = {}
     text_embeddings = []
-    diagram_embeddings = []
+    text_ids = []
 
-    def append_text(self, text, text_id, question_id) -> None:
-        text_dict = {}
-        text_dict["textId"] = text_id
-        text_dict["questionId"] = question_id
-        text_dict["text"] = text
-        self.__class__.texts.append(text_dict)
-
-    def append_diagram(self, diagram, diagram_id, quesntion_id) -> None:
-        diagrams_dict = {}
-        diagrams_dict["diagramId"] = diagram_id
-        diagrams_dict["questionId"] = quesntion_id
-        diagrams_dict["diagram"] = diagram
-        self.__class__.diagrams.append(diagrams_dict)
-
-    def append_text_embedding(self, text_embedding) -> None:
+    def append_data(self, question_id, text_embedding):
+        index = len(self.__class__.text_embeddings) - 1
+        # text_dict = {
+        #     'index':index,
+        #     ''
+        # }
+        self.__class__.text_ids_map[str(question_id)] = index
         self.__class__.text_embeddings.append(text_embedding)
+        self.__class__.text_ids.append(question_id)
 
-    def append_diagram_embedding(self, diagram_embedding) -> None:
-        self.__class__.diagram_embeddings.append(diagram_embedding)
+    def edit_data(self, question_id, new_text_embedding):
+        index = self.__class__.text_ids_map[str(question_id)]
+        self.__class__.text_embeddings[index] = new_text_embedding
 
-    def append_text_id(self, id):
-        self.__class__.text_ids.append(id)
+    def remove_data(self, question_id):
+        index = self.__class__.text_ids_map[str(question_id)]
+        del self.__class__.text_embeddings[index]
+        del self.__class__.text_ids[index]
+        del self.__class__.text_ids_map[question_id]
+
+        # revaluate indices of the text embeddings in the text_ids_map
+        for i, qid in enumerate(self.__class__.text_ids_map.keys()):
+            self.__class__.text_ids_map[qid] = i
